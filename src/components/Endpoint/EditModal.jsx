@@ -26,7 +26,11 @@ const EditModal = ({
   };
 
   const handleSelectGroup = (group) => {
-    setFormData({ ...formData, group_menu: group.id });
+    setFormData({
+      ...formData,
+      group_menu: group.id,
+      noMenu: group.id // Update noMenu field as well
+    });
     setGroupSearchTerm(group.nama);
     setIsGroupDropdownOpen(false);
   };
@@ -40,7 +44,8 @@ const EditModal = ({
         nama: '',
         fitur: '',
         pathMenu: '',
-        group_menu: ''
+        group_menu: '',
+        noMenu: ''
       });
     }
     setGroupSearchTerm("");

@@ -6,7 +6,6 @@ import { fetchMenuGroup } from '../api/menugroupApi';
 import DataTable from '../components/common/DataTable';
 import EditModal from '../components/accountgroup/EditModal';
 import ActionsCell from '../components/accountgroup/ActionsCell';
-import Settingmenu from '../components/accountgroup/Settingmenu';
 import SettingFeature from '../components/accountgroup/SettingFeature';
 
 
@@ -27,7 +26,6 @@ const AccGroup = () => {
   const [editingAccGroup, setEditingAccGroup] = useState(null);
   const [systems, setSystems] = useState([]);
   const [endpointGroups, setEndpointGroups] = useState([]);
-  const [showSettingmenuModal, setShowSettingmenuModal] = useState(false);
   const [showSettingFeatureModal, setShowSettingFeatureModal] = useState(false);
   const [selectedAccGroupForTree, setSelectedAccGroupForTree] = useState(null);
   
@@ -129,10 +127,6 @@ const AccGroup = () => {
     setShowEditModal(true);
   };
 
-  const handleShowSettingmenu = (accGroup) => {
-    setSelectedAccGroupForTree(accGroup);
-    setShowSettingmenuModal(true);
-  };
 
   const handleShowSettingFeature = (accGroup) => {
     setSelectedAccGroupForTree(accGroup);
@@ -158,11 +152,8 @@ const AccGroup = () => {
 
   const handleExport = (data) => {
     const exportData = data.map(item => ({
-      ID: item.id,
       'Group Name': item.namaGroup,
       'Group Code': item.codeGroup,
-      'System ID': item.idSistem,
-      'Is Administrator': item.isAdministrator ? 'Yes' : 'No',
       Status: item.status ? 'Active' : 'Inactive',
       'Created By': item.createdBy || '',
       'Updated By': item.updatedBy || '',
@@ -178,36 +169,17 @@ const AccGroup = () => {
   const columns = [
     {
       key: 'namaGroup',
-      label: 'Group Name',
+      label: 'Name',
       searchable: true,
       sortable: true,
       exportable: true
     },
     {
       key: 'codeGroup',
-      label: 'Group Code',
+      label: 'Code',
       searchable: true,
       sortable: true,
       exportable: true
-    },
-    {
-      key: 'idSistem',
-      label: 'System ID',
-      searchable: true,
-      sortable: true,
-      exportable: true
-    },
-    {
-      key: 'isAdministrator',
-      label: 'Administrator',
-      searchable: true,
-      sortable: true,
-      exportable: true,
-      isBoolean: true,
-      trueLabel: 'Yes',
-      falseLabel: 'No',
-      trueColor: 'bg-purple-100 text-purple-800',
-      falseColor: 'bg-gray-100 text-gray-800'
     },
     {
       key: 'status',
@@ -227,7 +199,7 @@ const AccGroup = () => {
       searchable: false,
       sortable: false,
       exportable: false,
-      render: (item) => <ActionsCell item={item} onEdit={handleEditAccGroup} onShowSettingmenu={handleShowSettingmenu} onShowSettingFeature={handleShowSettingFeature} />
+      render: (item) => <ActionsCell item={item} onEdit={handleEditAccGroup} onShowSettingFeature={handleShowSettingFeature} />
     }
   ];
 
@@ -269,12 +241,6 @@ const AccGroup = () => {
         isEdit={true}
       />
       
-      {/* Settingmenu Modal */}
-      <Settingmenu
-        showModal={showSettingmenuModal}
-        setShowModal={setShowSettingmenuModal}
-        accGroupData={selectedAccGroupForTree}
-      />
       
       {/* SettingFeature Modal */}
       <SettingFeature

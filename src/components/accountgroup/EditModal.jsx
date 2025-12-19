@@ -12,19 +12,24 @@ const EditModal = ({
 }) => {
   const [internalFormData, setInternalFormData] = React.useState({
     namaGroup: formData?.namaGroup || '',
-    codeGroup: formData?.codeGroup || '',
+    codeGroup: formData?.codeGroup ? (typeof formData.codeGroup === 'object' ? String(formData.codeGroup.id) : String(formData.codeGroup)) : '',
     idSistem: formData?.idSistem || (systems.length > 0 ? systems[0].id : ''),
     isAdministrator: formData?.isAdministrator || false,
     status: formData?.status !== undefined ? formData.status : true
   });
+
+  // State for searchable dropdowns
+  const [groupSearchTerm, setGroupSearchTerm] = React.useState('');
+  const [isGroupDropdownOpen, setIsGroupDropdownOpen] = React.useState(false);
+  const [systemSearchTerm, setSystemSearchTerm] = React.useState('');
+  const [isSystemDropdownOpen, setIsSystemDropdownOpen] = React.useState(false);
 
   // Update internal form data when formData prop changes (for edit mode)
   React.useEffect(() => {
     if (formData) {
       setInternalFormData({
         namaGroup: formData.namaGroup || '',
-        // Handle codeGroup data type conversion - ensure it's a string for the select value
-        codeGroup: formData.codeGroup ? String(formData.codeGroup) : '',
+        codeGroup: formData.codeGroup ? (typeof formData.codeGroup === 'object' ? String(formData.codeGroup.id) : String(formData.codeGroup)) : '',
         idSistem: formData.idSistem || (systems.length > 0 ? systems[0].id : ''),
         isAdministrator: formData.isAdministrator || false,
         status: formData.status !== undefined ? formData.status : true
@@ -39,14 +44,44 @@ const EditModal = ({
     }));
   };
 
+  const getFilteredGroups = () => {
+    return endpointGroups.filter((group) =>
+      group.nama.toLowerCase().includes(groupSearchTerm.toLowerCase())
+    );
+  };
+
+  const getFilteredSystems = () => {
+    return systems.filter((system) =>
+      system.nama.toLowerCase().includes(systemSearchTerm.toLowerCase())
+    );
+  };
+
+  const handleSelectGroup = (group) => {
+    setInternalFormData({
+      ...internalFormData,
+      codeGroup: group.id
+    });
+    setGroupSearchTerm(group.nama);
+    setIsGroupDropdownOpen(false);
+  };
+
+  const handleSelectSystem = (system) => {
+    setInternalFormData({
+      ...internalFormData,
+      idSistem: system.id
+    });
+    setSystemSearchTerm(system.nama);
+    setIsSystemDropdownOpen(false);
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     
     const dataToSave = {
       ...(formData?.id && { id: formData.id }),
       ...internalFormData,
-      // Ensure codeGroup is properly converted to integer if it exists
-      codeGroup: internalFormData.codeGroup ? parseInt(internalFormData.codeGroup) : null
+      // Ensure codeGroup is properly converted to string if it exists
+      codeGroup: internalFormData.codeGroup ? String(internalFormData.codeGroup) : ''
     };
 
     handleSubmit(dataToSave);
@@ -87,35 +122,85 @@ const EditModal = ({
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">Endpoint Group</label>
-              <select
-                required
-                value={internalFormData.codeGroup || ''}
-                onChange={(e) => handleChange('codeGroup', e.target.value)}
-                className="mt-1 block w-full px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">Select Endpoint Group</option>
-                {endpointGroups.map(endpointGroup => (
-                  <option key={endpointGroup.id} value={endpointGroup.id}>
-                    {endpointGroup.nama}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <input
+                  type="text"
+                  className="mt-1 block w-full px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring pr-8"
+                  placeholder="Search group..."
+                  value={groupSearchTerm}
+                  onChange={(e) => {
+                    setGroupSearchTerm(e.target.value);
+                    setIsGroupDropdownOpen(true);
+                  }}
+                  onClick={() => setIsGroupDropdownOpen(true)}
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                     <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {isGroupDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setIsGroupDropdownOpen(false)}></div>
+                    <ul className="absolute z-20 w-full mt-1 bg-popover border border-border rounded shadow-lg max-h-60 overflow-y-auto">
+                      {getFilteredGroups().length > 0 ? (
+                        getFilteredGroups().map((group) => (
+                          <li
+                            key={group.id}
+                            onClick={() => handleSelectGroup(group)}
+                            className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+                          >
+                            {group.nama}
+                          </li>
+                        ))
+                      ) : (
+                        <li className="px-4 py-2 text-gray-500 text-sm italic">No groups found</li>
+                      )}
+                    </ul>
+                  </>
+                )}
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground">System</label>
-              <select
-                required
-                value={internalFormData.idSistem || ''}
-                onChange={(e) => handleChange('idSistem', parseInt(e.target.value))}
-                className="mt-1 block w-full px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option value="">Select System</option>
-                {systems.map(system => (
-                  <option key={system.id} value={system.id}>
-                    {system.nama}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <input
+                  type="text"
+                  className="mt-1 block w-full px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring pr-8"
+                  placeholder="Search system..."
+                  value={systemSearchTerm}
+                  onChange={(e) => {
+                    setSystemSearchTerm(e.target.value);
+                    setIsSystemDropdownOpen(true);
+                  }}
+                  onClick={() => setIsSystemDropdownOpen(true)}
+                />
+                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                     <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {isSystemDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setIsSystemDropdownOpen(false)}></div>
+                    <ul className="absolute z-20 w-full mt-1 bg-popover border border-border rounded shadow-lg max-h-60 overflow-y-auto">
+                      {getFilteredSystems().length > 0 ? (
+                        getFilteredSystems().map((system) => (
+                          <li
+                            key={system.id}
+                            onClick={() => handleSelectSystem(system)}
+                            className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm"
+                          >
+                            {system.nama}
+                          </li>
+                        ))
+                      ) : (
+                        <li className="px-4 py-2 text-gray-500 text-sm italic">No systems found</li>
+                      )}
+                    </ul>
+                  </>
+                )}
+              </div>
             </div>
             {/* Is Administrator Toggle */}
             <div>
@@ -147,7 +232,7 @@ const EditModal = ({
               </label>
             </div>
           </div>
-          <div className="flex justify-end space-x-3 p-6 border-t border-border bg-muted/50">
+          <div className="flex justify-end space-x-3 p-6 border-t border-border">
             <button
               type="button"
               className="bg-muted hover:bg-muted/80 text-foreground px-6 py-2 rounded-md transition-colors"

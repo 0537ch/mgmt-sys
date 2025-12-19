@@ -6,7 +6,7 @@ const ENDPOINT_SAVE = import.meta.env.VITE_API_ACC_GROUP_SAVE;
 interface AccGroupItem {
   id?: number;
   namaGroup?: string;
-  codeGroup?: string;
+  codeGroup?: string; 
   [key: string]: any;
 }
 

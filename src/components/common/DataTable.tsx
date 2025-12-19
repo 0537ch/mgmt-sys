@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import type { WorkBook } from 'xlsx';
-import { ArrowDownTrayIcon, ArrowPathIcon, PlusIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, ArrowPathIcon, PlusIcon, CheckCircleIcon, XCircleIcon, } from '@heroicons/react/24/outline';
+import {Disc} from "lucide-react"
 
 // Define TypeScript interfaces for the DataTable props
 interface Column {
@@ -159,13 +160,16 @@ const DataTable = ({
     console.log('Sorted data length:', sortedData.length); // Debug log
     
     try {
+      let exportData;
+      
       if (onExport) {
         console.log('Calling onExport callback'); // Debug log
-        onExport(sortedData);
+        exportData = onExport(sortedData);
+        console.log('Export data received from callback:', exportData?.length, 'rows'); // Debug log
       } else {
         console.log('Using default export functionality'); // Debug log
         // Default export functionality
-        const exportData = sortedData.map((item: DataItem) => {
+        exportData = sortedData.map((item: DataItem) => {
           const exportItem: Record<string, any> = {};
           columns.forEach(column => {
             if (column.exportable !== false) {
@@ -193,7 +197,10 @@ const DataTable = ({
           return exportItem;
         });
         console.log('Export data prepared:', exportData.length, 'rows'); // Debug log
+      }
 
+      // Create and download the Excel file
+      if (exportData && exportData.length > 0) {
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb: WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, title || "Data");
@@ -205,6 +212,8 @@ const DataTable = ({
         // Use XLSX.write with proper typing
         XLSX.writeFile(wb, fileName);
         console.log('File written successfully'); // Debug log
+      } else {
+        console.warn('No data to export');
       }
     } catch (error) {
       console.error('Error exporting to Excel:', error);
@@ -226,6 +235,7 @@ const DataTable = ({
         
         const fileName = `${(title || 'data')}.xlsx`;
         XLSX.writeFile(wb, fileName);
+        console.log('Fallback export successful');
       } catch (fallbackError) {
         console.error('Fallback export also failed:', fallbackError);
       }
@@ -257,14 +267,14 @@ const DataTable = ({
       
       {/* Header Section - Shrinks/Grows as needed but doesn't scroll */}
       <div className="shrink-0">
-        <h1 className="text-2xl font-bold text-foreground mb-4">{title || 'Data'} ({data.length} Total)</h1>
+        <h2 className="text-xl font-bold text-foreground mb-4">{title || 'Data'} ({data.length} Total)</h2>
         <div className="flex items-center space-x-4">
           {showAddButton && onAdd && (
             <button
               className="bg-secondary hover:bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-lg transition-colors"
               onClick={onAdd}
             >
-              <PlusIcon className='h-5 w-5 text-foreground'/>
+              <PlusIcon className='h-5 w-5 text-blue-600'/>
             </button>
           )}
           {showExportButton && (
@@ -292,21 +302,16 @@ const DataTable = ({
           )}
         </div>
       </div>
-
-      {/* Table Container
-         min-h-0 is CRITICAL: it allows this flex child to shrink smaller than its content,
-         which triggers the overflow-auto to kick in.
-      */}
       <div className="flex-1 min-h-0 bg-card rounded-xl shadow-lg flex flex-col overflow-hidden border border-border/50">
         
         {/* Scrollable Area */}
         <div className="flex-1 overflow-y-auto relative">
           <table className="w-full">
             {/* Sticky Header */}
-            <thead className="bg-muted/50 sticky top-0 z-10 border-b border-border shadow-sm">
+            <thead className="bg-card-dark sticky top-0 z-10 border-b border-border shadow-sm">
               <tr>
                 {columns.map(column => (
-                  <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted">
+                  <th key={column.key} className="px-6 py-3 text-left text-xs font-medium text-card-foreground uppercase tracking-wider bg-card-dark">
                     {column.searchable !== false ? (
                       <div className="flex flex-col space-y-2">
                         <div
@@ -361,11 +366,16 @@ const DataTable = ({
                           {column.isBoolean ? (
                             <div className="flex items-center">
                               {item[column.key] === true ? (
-                                <CheckCircleIcon className="h-5 w-5 text-green-500" title={column.trueLabel || 'Active'} />
+                                <div title={column.trueLabel || 'Active'}>
+                                  <Disc className="h-5 w-5 text-green-500" fill="currentColor" />
+                                </div>
                               ) : (
-                                <XCircleIcon className="h-5 w-5 text-red-500" title={column.falseLabel || 'Inactive'} />
+                                <div title={column.falseLabel || 'Inactive'}>
+                                  <Disc className="h-5 w-5 text-red-500" fill="currentColor" />
+                                </div>
                               )}
                             </div>
+
                           ) : column.isDate ? (
                             new Date(item[column.key]).toLocaleDateString()
                           ) : column.nested ? (

@@ -10,6 +10,7 @@ import AccGroup from './pages/AccGroup'
 import UserAccount from './pages/UserAccount'
 import Endpoint from './pages/Endpoint'
 import Fitur from './pages/Fitur'
+import SettingMenu from './pages/SettingMenu'
 
 
 function App() {
@@ -146,6 +147,18 @@ function App() {
               isAuthenticated ? (
                 <Layout>
                   <Fitur />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/account-group/setting-menu/:accGroupId"
+            element={
+              isAuthenticated ? (
+                <Layout>
+                  <SettingMenu />
                 </Layout>
               ) : (
                 <Navigate to="/login" />

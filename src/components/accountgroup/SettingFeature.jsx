@@ -18,7 +18,6 @@ const SettingFeature = ({ showModal, setShowModal, accGroupData }) => {
     setError(null);
     try {
       const data = await fetchSettingFeature(accGroupData.id);
-      console.log('API Response:', data); // Debug log to see the actual response
       setFeatureData(data);
       
       // Initialize selected features state
@@ -30,7 +29,6 @@ const SettingFeature = ({ showModal, setShowModal, accGroupData }) => {
         setSelectedFeatures(initialSelections);
       }
     } catch (err) {
-      console.error('API Error:', err); // Debug log to see the error
       setError(err.message || 'Failed to load feature data');
     } finally {
       setLoading(false);

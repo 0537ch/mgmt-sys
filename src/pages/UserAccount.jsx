@@ -118,7 +118,6 @@ const Account = () => {
 
   const handleExport = (data) => {
     const exportData = data.map(item => ({
-      ID: item.id,
       NIPP: item.nipp,
       Email: item.email
     }));

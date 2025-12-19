@@ -55,12 +55,32 @@ function Layout({ children }: { children: ReactNode }) {
   const getBreadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter(x => x)
     
-    const breadcrumbs = pathnames.map((name, index) => {
-      const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`
-      const isLast = index === pathnames.length - 1
+    // Navigation data with titles from app-sidebar
+    const navData: Record<string, string> = {
+      'sistem': 'System',
+      'menu': 'Endpoint Group',
+      'menu-data': 'Endpoint',
+      'account-group': 'Account Group',
+      'account': 'Account',
+      'fitur': 'Fitur',
+      'settings': 'Settings',
+      'setting-menu': 'Setting Menu'
+    }
+    
+    // Filter out the accGroupId from the pathnames for breadcrumb display
+    const filteredPathnames = pathnames.filter((name, index) => {
+      // Skip the accGroupId if we're in the setting-menu route
+      return !(pathnames[index - 1] === 'setting-menu' && pathnames[index - 2] === 'account-group')
+    })
+    
+    const breadcrumbs = filteredPathnames.map((name, index) => {
+      // Get the original index to build the correct route
+      const originalIndex = pathnames.indexOf(name)
+      const routeTo = `/${pathnames.slice(0, originalIndex + 1).join('/')}`
+      const isLast = index === filteredPathnames.length - 1
       
-      // Map path names to display names
-      const displayName = name.charAt(0).toUpperCase() + name.slice(1)
+      // Use title from navData, fallback to capitalized name if not found
+      const displayName = navData[name] || name.charAt(0).toUpperCase() + name.slice(1)
       
       return {
         name: displayName,
@@ -77,7 +97,7 @@ function Layout({ children }: { children: ReactNode }) {
       <AppSidebar />
       <SidebarInset className="h-screen">
         <header className="flex h-16 shrink-0 items-center gap-2 border-b">
-          <SidebarTrigger className="-ml-1" />
+          <SidebarTrigger className="" />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>

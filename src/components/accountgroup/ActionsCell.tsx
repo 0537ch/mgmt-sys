@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PencilIcon,ListBulletIcon,PuzzlePieceIcon } from '@heroicons/react/24/outline';
 
 interface AccGroupItem {
@@ -18,11 +19,16 @@ interface AccGroupItem {
 interface ActionsCellProps {
   item: AccGroupItem;
   onEdit: (item: AccGroupItem) => void;
-  onShowSettingmenu: (item: AccGroupItem) => void;
   onShowSettingFeature: (item: AccGroupItem) => void;
 }
 
-const ActionsCell: React.FC<ActionsCellProps> = ({ item, onEdit, onShowSettingmenu, onShowSettingFeature }) => {
+const ActionsCell: React.FC<ActionsCellProps> = ({ item, onEdit, onShowSettingFeature }) => {
+  const navigate = useNavigate();
+
+  const handleShowSettingmenu = (accGroup: AccGroupItem) => {
+    // Navigate to the SettingMenu page with the account group ID
+    navigate(`/account-group/setting-menu/${accGroup.codeGroup || accGroup.id}`);
+  };
   return (
     <div>
       <button
@@ -33,7 +39,7 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ item, onEdit, onShowSettingme
       </button>
         <button
           className="hover:text-purple-900 text-purple-600 px-2 "
-          onClick={() => onShowSettingmenu(item)}
+          onClick={() => handleShowSettingmenu(item)}
         >
           <ListBulletIcon className="h-4 w-4" />
         </button>

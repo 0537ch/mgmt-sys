@@ -170,7 +170,6 @@ const Dashboard = () => {
 
   const handleExport = (data) => {
     const exportData = data.map(item => ({
-      ID: item.id,
       'Endpoint Group': item.nama,
       'System': item.sistem?.nama || '-',
       Status: item.status ? 'Active' : 'Inactive',

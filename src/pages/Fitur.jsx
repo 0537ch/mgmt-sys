@@ -165,7 +165,7 @@ const Fitur = () => {
       searchable: true,
       sortable: true,
       render: (item) => (
-        <span className="text-sm text-gray-700">
+        <span className="text-sm text-foreground">
           {item.icon || '-'}
         </span>
       )
@@ -176,7 +176,7 @@ const Fitur = () => {
       searchable: true,
       sortable: true,
       render: (item) => (
-        <span className="text-sm text-gray-700">
+        <span className="text-sm text-foreground">
           {item.showFiture || '-'}
         </span>
       )
@@ -184,6 +184,9 @@ const Fitur = () => {
     {
       key: 'status',
       label: 'Status',
+      isBoolean: true,
+      trueLabel: 'Active',
+      falseLabel: 'Inactive',
       render: (item) => (
         <span className={`px-2 py-1 rounded text-xs ${item.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
           {item.status ? 'Active' : 'Inactive'}
@@ -207,6 +210,7 @@ const Fitur = () => {
     {
       key: 'actions',
       label: 'Actions',
+      searchable: false,
       render: (item) => (
         <ActionsCell item={item} onEdit={handleEditFitur} />
       )

@@ -9,7 +9,6 @@ import ActionsCell from '../components/System/ActionsCell'
 
 const exportToExcel = (data) => {
   return data.map(item => ({
-    ID: item.id,
     Name: item.nama,
     URL: item.url,
     Destination: item.destination,
@@ -86,13 +85,6 @@ function SystemManagement() {
       exportable: true
     },
     {
-      key: 'typeApi',
-      label: 'API Type',
-      searchable: true,
-      sortable: true,
-      exportable: true
-    },
-    {
       key: 'status',
       label: 'Status',
       searchable: true,
@@ -125,7 +117,6 @@ function SystemManagement() {
         onRefresh={loadSystems}
         onAdd={() => {
           const newSystemConfig = {
-            // No ID for new items - backend will create
               nama: '',
               url: '',
               destination: '',

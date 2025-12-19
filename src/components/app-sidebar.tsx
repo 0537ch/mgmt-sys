@@ -9,6 +9,7 @@ import {
   SquareStack,
   Settings,
   LogOut,
+  LayoutDashboard,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -49,6 +50,13 @@ const data = {
   user: getUserData(),
   navMain: [
     {
+      title: "Dashboard",
+      url:"",
+      icon:LayoutDashboard,
+      isActive:false,
+      items: [],
+    },
+    {
       title: "System",
       url: "/sistem",
       icon: Server,
@@ -59,7 +67,7 @@ const data = {
       title: "Endpoint Group",
       url: "/menu",
       icon: Link,
-      isActive: false,
+      isActive: true,
       items: [
         {
           title: "Endpoint",
@@ -71,7 +79,7 @@ const data = {
       title: "Account Group",
       url: "/account-group",
       icon: Users,
-      isActive: false,
+      isActive: true,
       items: [
         {
           title: "Account",
@@ -110,7 +118,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Management System</span>
+                  <span className="truncate font-medium">System</span>
                 </div>
               </a>
             </SidebarMenuButton>
