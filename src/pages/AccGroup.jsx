@@ -6,7 +6,6 @@ import { fetchMenuGroup } from '../api/menugroupApi';
 import DataTable from '../components/common/DataTable';
 import EditModal from '../components/accountgroup/EditModal';
 import ActionsCell from '../components/accountgroup/ActionsCell';
-import SettingFeature from '../components/accountgroup/SettingFeature';
 
 
 const AccGroup = () => {
@@ -26,8 +25,6 @@ const AccGroup = () => {
   const [editingAccGroup, setEditingAccGroup] = useState(null);
   const [systems, setSystems] = useState([]);
   const [endpointGroups, setEndpointGroups] = useState([]);
-  const [showSettingFeatureModal, setShowSettingFeatureModal] = useState(false);
-  const [selectedAccGroupForTree, setSelectedAccGroupForTree] = useState(null);
   
   const navigate = useNavigate();
 
@@ -128,10 +125,6 @@ const AccGroup = () => {
   };
 
 
-  const handleShowSettingFeature = (accGroup) => {
-    setSelectedAccGroupForTree(accGroup);
-    setShowSettingFeatureModal(true);
-  };
 
   const handleUpdateAccGroup = async (data) => {
     try {
@@ -169,7 +162,7 @@ const AccGroup = () => {
   const columns = [
     {
       key: 'namaGroup',
-      label: 'Name',
+      label: 'Nama',
       searchable: true,
       sortable: true,
       exportable: true
@@ -199,7 +192,7 @@ const AccGroup = () => {
       searchable: false,
       sortable: false,
       exportable: false,
-      render: (item) => <ActionsCell item={item} onEdit={handleEditAccGroup} onShowSettingFeature={handleShowSettingFeature} />
+      render: (item) => <ActionsCell item={item} onEdit={handleEditAccGroup} onShowSettingFeature={() => {}} />
     }
   ];
 
@@ -239,14 +232,6 @@ const AccGroup = () => {
         setShowModal={setShowEditModal}
         handleSubmit={handleUpdateAccGroup}
         isEdit={true}
-      />
-      
-      
-      {/* SettingFeature Modal */}
-      <SettingFeature
-        showModal={showSettingFeatureModal}
-        setShowModal={setShowSettingFeatureModal}
-        accGroupData={selectedAccGroupForTree}
       />
     </div>
   );

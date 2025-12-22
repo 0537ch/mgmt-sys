@@ -65,28 +65,28 @@ function SystemManagement() {
   const columns = [
     {
       key: 'nama',
-      label: 'Name',
+      label: 'Nama',
       searchable: true,
       sortable: true,
       exportable: true
     },
     {
       key: 'url',
-      label: 'URL',
+      label: 'path',
       searchable: true,
       sortable: true,
       exportable: true
     },
     {
       key: 'destination',
-      label: 'Destination',
+      label: 'URL',
       searchable: true,
       sortable: true,
       exportable: true
     },
     {
       key: 'status',
-      label: 'Status',
+      label: 'Is Active?',
       searchable: true,
       sortable: true,
       exportable: true,

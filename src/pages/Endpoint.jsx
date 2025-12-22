@@ -159,8 +159,8 @@ const Endpoint = () => {
   };
 
   const columns = [
-    { key: 'nama', label: 'Name', searchable: true, sortable: true },
-    { key: 'fitur', label: 'Feature', searchable: true, sortable: true },
+    { key: 'nama', label: 'Nama', searchable: true, sortable: true },
+    { key: 'fitur', label: 'Modul', searchable: true, sortable: true },
     { key: 'pathMenu', label: 'Path', searchable: true, sortable: true },
     { 
       key: 'group_menu', 
@@ -176,7 +176,7 @@ const Endpoint = () => {
     },
     {
       key: 'isSidebar',
-      label: 'Sidebar',
+      label: 'Is Sidebar?',
       searchable: true,
       sortable: true,
       exportable: true,

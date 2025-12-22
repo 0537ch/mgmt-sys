@@ -29,6 +29,11 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ item, onEdit, onShowSettingFe
     // Navigate to the SettingMenu page with the account group ID
     navigate(`/account-group/setting-menu/${accGroup.codeGroup || accGroup.id}`);
   };
+
+  const handleShowSettingFeature = (accGroup: AccGroupItem) => {
+    // Navigate to the SettingFeature page with the account group ID
+    navigate(`/account-group/setting-feature/${accGroup.codeGroup || accGroup.id}`);
+  };
   return (
     <div>
       <button
@@ -45,7 +50,7 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ item, onEdit, onShowSettingFe
         </button>
         <button
           className="text-green-600 hover:text-green-900"
-          onClick={() => onShowSettingFeature(item)}
+          onClick={() => handleShowSettingFeature(item)}
         >
           <PuzzlePieceIcon className="h-4 w-4"/>
         </button>

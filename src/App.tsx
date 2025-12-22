@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/Theme-provider"
 import { useState, useEffect } from 'react'
 import Login from './pages/Login'
 import Layout from './components/Layout'
+import Dashboard from './pages/Dashboard'
 import EndpointGroup from './pages/EndpointGroup'
 import SystemManagement from './pages/Sistem'
 import Settings from './pages/Settings'
@@ -11,6 +12,7 @@ import UserAccount from './pages/UserAccount'
 import Endpoint from './pages/Endpoint'
 import Fitur from './pages/Fitur'
 import SettingMenu from './pages/SettingMenu'
+import SettingFeature from './pages/SettingFeature'
 
 
 function App() {
@@ -68,6 +70,18 @@ function App() {
           <Route
             path="/login"
             element={<Login setIsAuthenticated={setIsAuthenticated} />}
+          />
+          <Route
+            path="/dashboard"
+            element={
+              isAuthenticated ? (
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
           />
           <Route
             path="/menu"
@@ -166,8 +180,20 @@ function App() {
             }
           />
           <Route
+            path="/account-group/setting-feature/:accGroupId"
+            element={
+              isAuthenticated ? (
+                <Layout>
+                  <SettingFeature />
+                </Layout>
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
             path="/"
-            element={<Navigate to={isAuthenticated ? "/sistem" : "/login"} />}
+            element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />}
           />
         </Routes>
       </div>

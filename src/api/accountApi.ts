@@ -3,10 +3,24 @@ import apiClient from './axiosConfig';
 const ENDPOINT_ACC = import.meta.env.VITE_API_ACC_ENDPOINT;
 const ENDPOINT_ACC_SAVE = import.meta.env.VITE_API_ACC_SAVE;
 
-export const fetchAccounts = async () => {
+interface AccountItem {
+  id?: number;
+  username?: string;
+  email?: string;
+  [key: string]: any;
+}
+
+interface ApiResponse<T> {
+  data?: T;
+  message?: string;
+  status?: string;
+  [key: string]: any;
+}
+
+export const fetchAccounts = async (): Promise<AccountItem[]> => {
   try {
     const response = await apiClient.get(ENDPOINT_ACC);
-    const apiResponse = response.data;
+    const apiResponse: ApiResponse<AccountItem[]> = response.data;
 
     // Validasi: Pastikan data ada dan berupa array
     if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
@@ -15,26 +29,26 @@ export const fetchAccounts = async () => {
 
     return apiResponse.data;
 
-  } catch (error) {
-    console.error("Error in fetchAccGroup:", error instanceof Error ? error.message : String(error));
+  } catch (error: unknown) {
+    console.error("Error in fetchAccounts:", error instanceof Error ? error.message : String(error));
     throw error;
   }
 };
 
-export const saveAccount = async (accountData: any) => {
+export const saveAccount = async (accountData: AccountItem): Promise<AccountItem> => {
   try {
     const response = await apiClient.post(ENDPOINT_ACC_SAVE, accountData);
-    const apiResponse = response.data;
+    const apiResponse: ApiResponse<AccountItem> = response.data;
 
     // Validasi response
     if (!apiResponse.data) {
-      throw new Error('Failed to save account group');
+      throw new Error('Failed to save account');
     }
 
     return apiResponse.data;
 
-  } catch (error) {
-    console.error("Error in saveAccGroup:", error instanceof Error ? error.message : String(error));
+  } catch (error: unknown) {
+    console.error("Error in saveAccount:", error instanceof Error ? error.message : String(error));
     throw error;
   }
 };

@@ -2,29 +2,54 @@ import apiClient from './axiosConfig';
 
 const SETTING_FEATURE = import.meta.env.VITE_API_SETTING_FEATURE;
 
-export const fetchSettingFeature = async (idGroup: string = '') => {
+interface SettingFeatureItem {
+  id?: number;
+  idGroup?: string;
+  featureId?: string;
+  isEnabled?: boolean;
+  [key: string]: any;
+}
+
+interface ApiResponse<T> {
+  data?: T;
+  message?: string;
+  status?: string;
+  [key: string]: any;
+}
+
+export const fetchSettingFeature = async (idGroup: string = ''): Promise<SettingFeatureItem[]> => {
   try {
     const fullUrl = `${SETTING_FEATURE}${idGroup}`;
-    console.log('Fetching setting feature from URL:', fullUrl);
     const response = await apiClient.get(fullUrl);
-    const apiResponse = response.data;
+    const apiResponse: ApiResponse<SettingFeatureItem[]> = response.data;
 
-    // Check if response has the expected structure
-    if (apiResponse.data && Array.isArray(apiResponse.data)) {
-      // Handle case where response is directly an array in data property
-      return { data: apiResponse.data };
-    } else if (apiResponse.data && apiResponse.data.all_menu) {
-      return apiResponse.data;
-    } else if (Array.isArray(apiResponse.data)) {
-      // Handle case where response is directly an array
-      return { data: apiResponse.data };
-    } else {
-      console.warn('Unexpected API response structure:', apiResponse);
-      return { data: [] }; // Return empty structure as fallback
+    // Validasi: Pastikan data ada dan berupa array
+    if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
+      return [];
     }
 
-  } catch (error) {
-    console.error("Error in fetchMenu:", error instanceof Error ? error.message : String(error));
+    return apiResponse.data;
+
+  } catch (error: unknown) {
+    console.error("Error in fetchSettingFeature:", error instanceof Error ? error.message : String(error));
+    throw error;
+  }
+};
+
+export const saveSettingFeature = async (settingFeatureData: SettingFeatureItem): Promise<SettingFeatureItem> => {
+  try {
+    const response = await apiClient.post(SETTING_FEATURE, settingFeatureData);
+    const apiResponse: ApiResponse<SettingFeatureItem> = response.data;
+
+    // Validasi response
+    if (!apiResponse.data) {
+      throw new Error('Failed to save setting feature');
+    }
+
+    return apiResponse.data;
+
+  } catch (error: unknown) {
+    console.error("Error in saveSettingFeature:", error instanceof Error ? error.message : String(error));
     throw error;
   }
 };

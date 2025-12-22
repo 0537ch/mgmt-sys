@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchMenu, saveMenu } from '../api/fiturApi';
+import { fetchFitur, saveFitur } from '../api/fiturApi';
 import { fetchAllSystems } from '../api/SystemApi';
 import DataTable from '../components/common/DataTable';
 import ActionsCell from '../components/Fitur/ActionsCell';
@@ -41,7 +41,7 @@ const Fitur = () => {
     setError(null);
     try {
       const [fiturData, systemsData] = await Promise.all([
-        fetchMenu(),
+        fetchFitur(),
         fetchAllSystems()
       ]);
       setFiturs(fiturData);
@@ -58,7 +58,7 @@ const Fitur = () => {
   const handleRefresh = async () => {
     setRefreshing(true);
     try {
-      const data = await fetchMenu();
+      const data = await fetchFitur();
       setFiturs(data);
     } catch (error) {
       console.error("Error refreshing data:", error);
@@ -127,7 +127,7 @@ const Fitur = () => {
         dataToSend.id = formData.id;
       }
 
-      await saveMenu(dataToSend);
+      await saveFitur(dataToSend);
       console.log(`Fitur ${isEdit ? 'updated' : 'saved'} successfully:`, dataToSend);
       
       setShowModal(false);
@@ -184,14 +184,14 @@ const Fitur = () => {
     {
       key: 'status',
       label: 'Status',
+      searchable: true,
+      sortable: true,
+      exportable: true,
       isBoolean: true,
       trueLabel: 'Active',
       falseLabel: 'Inactive',
-      render: (item) => (
-        <span className={`px-2 py-1 rounded text-xs ${item.status ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {item.status ? 'Active' : 'Inactive'}
-        </span>
-      )
+      trueColor: 'bg-green-100 text-green-800',
+      falseColor: 'bg-red-100 text-red-800'
     },
     {
       key: 'idSistem',

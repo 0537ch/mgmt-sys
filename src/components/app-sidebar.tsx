@@ -7,6 +7,8 @@ import {
   Link,
   Users,
   SquareStack,
+  User,
+  Braces,
   Settings,
   LogOut,
   LayoutDashboard,
@@ -34,7 +36,7 @@ const getUserData = () => {
     try {
       const parsedUser = JSON.parse(userDataString)
       userData = {
-        name: parsedUser.username || parsedUser.name || username,
+        name: username,
         email: parsedUser.email || '',
         avatar: parsedUser.avatar || ''
       }
@@ -51,7 +53,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url:"",
+      url:"/dashboard",
       icon:LayoutDashboard,
       isActive:false,
       items: [],
@@ -68,24 +70,28 @@ const data = {
       url: "/menu",
       icon: Link,
       isActive: true,
-      items: [
-        {
-          title: "Endpoint",
-          url: "/menu-data",
-        },
-      ],
+      items: [],
+    },
+    {
+      title: "Endpoint",
+      url: "/menu-data",
+      icon: Braces,
+      isActive: true,
+      items: []
     },
     {
       title: "Account Group",
       url: "/account-group",
       icon: Users,
       isActive: true,
-      items: [
-        {
-          title: "Account",
-          url: "/account",
-        },
-      ],
+      items: [],
+    },
+    {
+      title: "Account",
+      url: "/account",
+      icon: User,
+      isActive: true,
+      items: []
     },
     {
       title: "Fitur",

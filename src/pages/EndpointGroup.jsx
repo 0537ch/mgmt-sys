@@ -186,14 +186,14 @@ const Dashboard = () => {
   const columns = [
     {
       key: 'nama',
-      label: 'Name',
+      label: 'Nama',
       searchable: true,
       sortable: true,
       exportable: true
     },
     {
       key: 'sistem.nama',
-      label: 'System',
+      label: 'Sistem',
       searchable: true,
       sortable: true,
       exportable: true,
@@ -201,7 +201,7 @@ const Dashboard = () => {
     },
     {
       key: 'status',
-      label: 'Status',
+      label: 'Is Active?',
       searchable: true,
       sortable: true,
       exportable: true,

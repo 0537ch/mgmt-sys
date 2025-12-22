@@ -57,6 +57,7 @@ function Layout({ children }: { children: ReactNode }) {
     
     // Navigation data with titles from app-sidebar
     const navData: Record<string, string> = {
+      'dashboard': 'Dashboard',
       'sistem': 'System',
       'menu': 'Endpoint Group',
       'menu-data': 'Endpoint',
@@ -64,13 +65,15 @@ function Layout({ children }: { children: ReactNode }) {
       'account': 'Account',
       'fitur': 'Fitur',
       'settings': 'Settings',
-      'setting-menu': 'Setting Menu'
+      'setting-menu': 'Setting Menu',
+      'setting-feature': 'Setting Feature'
     }
     
     // Filter out the accGroupId from the pathnames for breadcrumb display
     const filteredPathnames = pathnames.filter((name, index) => {
-      // Skip the accGroupId if we're in the setting-menu route
-      return !(pathnames[index - 1] === 'setting-menu' && pathnames[index - 2] === 'account-group')
+      // Skip the accGroupId if we're in the setting-menu or setting-feature route
+      return !(pathnames[index - 1] === 'setting-menu' && pathnames[index - 2] === 'account-group') &&
+             !(pathnames[index - 1] === 'setting-feature' && pathnames[index - 2] === 'account-group')
     })
     
     const breadcrumbs = filteredPathnames.map((name, index) => {
@@ -100,21 +103,29 @@ function Layout({ children }: { children: ReactNode }) {
           <SidebarTrigger className="" />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">Home</BreadcrumbLink>
-              </BreadcrumbItem>
-              {getBreadcrumbs().map((crumb, index) => (
-                <div key={crumb.href} className="flex items-center">
-                  <BreadcrumbSeparator />
+              {location.pathname === '/dashboard' ? (
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                </BreadcrumbItem>
+              ) : (
+                <>
                   <BreadcrumbItem>
-                    {crumb.isLast ? (
-                      <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
-                    ) : (
-                      <BreadcrumbLink href={crumb.href}>{crumb.name}</BreadcrumbLink>
-                    )}
+                    <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                   </BreadcrumbItem>
-                </div>
-              ))}
+                  {getBreadcrumbs().map((crumb, index) => (
+                    <div key={crumb.href} className="flex items-center">
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        {crumb.isLast ? (
+                          <BreadcrumbPage>{crumb.name}</BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink href={crumb.href}>{crumb.name}</BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+                    </div>
+                  ))}
+                </>
+              )}
             </BreadcrumbList>
           </Breadcrumb>
           <div className="flex-1" />
