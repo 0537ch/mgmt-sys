@@ -1,11 +1,21 @@
 import React from 'react';
+import SystemComboBox from '../ComboBox/SystemComboBox';
 
-const EditModal = ({ editingMenuGroup, onSave, onCancel, systems }) => {
+const EditModal = ({ editingMenuGroup, onSave, onCancel }) => {
   const [formData, setFormData] = React.useState({
     nama: editingMenuGroup?.nama || '',
-    idSistem: editingMenuGroup?.idSistem || (systems.length > 0 ? systems[0].id : ''),
+    idSistem: editingMenuGroup?.idSistem || '',
     status: editingMenuGroup?.status !== undefined ? editingMenuGroup.status : true
   });
+
+  // Update form data when editingMenuGroup changes
+  React.useEffect(() => {
+    setFormData({
+      nama: editingMenuGroup?.nama || '',
+      idSistem: editingMenuGroup?.idSistem || '',
+      status: editingMenuGroup?.status !== undefined ? editingMenuGroup.status : true
+    });
+  }, [editingMenuGroup]);
 
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -25,6 +35,18 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel, systems }) => {
     onSave(dataToSave);
   };
 
+  const handleCloseForm = () => {
+    if (!editingMenuGroup?.id) {
+      // Reset form data only for add mode
+      setFormData({
+        nama: '',
+        idSistem: '',
+        status: true
+      });
+    }
+    onCancel();
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-9999">
       <div className="relative bg-card rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] m-4 z-10000 border border-border/50">
@@ -34,7 +56,7 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel, systems }) => {
           </h3>
           <button
             className="text-muted-foreground hover:text-foreground text-2xl font-light leading-none"
-            onClick={onCancel}
+            onClick={handleCloseForm}
           >
             ×
           </button>
@@ -50,20 +72,17 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel, systems }) => {
                 className="mt-1 block w-full px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">System</label>
-              <select
-                value={formData.idSistem}
-                onChange={(e) => handleChange('idSistem', parseInt(e.target.value))}
-                className="mt-1 block w-full px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                {systems.map(system => (
-                  <option key={system.id} value={system.id}>
-                    {system.nama}
-                  </option>
-                ))}
-              </select>
+            {/* System ComboBox */}
+            <div className="relative z-[10001]">
+              <label className="block text-sm font-medium text-foreground mb-1">System</label>
+              <SystemComboBox
+                value={formData.idSistem || undefined}
+                onValueChange={(value) => handleChange('idSistem', value)}
+                placeholder="Select system..."
+                className="w-full"
+              />
             </div>
+            
             <div>
               <label className="flex items-center space-x-2">
                 <button
@@ -89,7 +108,7 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel, systems }) => {
             <button
               type="button"
               className="bg-muted hover:bg-muted/80 text-foreground px-6 py-2 rounded-md transition-colors"
-              onClick={onCancel}
+              onClick={handleCloseForm}
             >
               Cancel
             </button>

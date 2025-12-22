@@ -26,10 +26,7 @@ const DetailsModal = ({ showModal, item, setShowModal }) => {
           <div className="space-y-4">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{item.id}</p>
-              </div>
+              
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint Name</label>
@@ -66,10 +63,6 @@ const DetailsModal = ({ showModal, item, setShowModal }) => {
               <label className="block text-sm font-medium text-foreground mb-1">System Information</label>
               <div className="bg-muted/50 p-3 rounded">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-xs text-muted-foreground">System ID:</span>
-                    <p className="text-sm text-foreground">{item.idSistem || 'Not assigned'}</p>
-                  </div>
                   {item.group_menu?.sistem && (
                     <div>
                       <span className="text-xs text-muted-foreground">System Name:</span>

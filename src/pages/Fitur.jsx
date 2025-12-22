@@ -5,6 +5,7 @@ import { fetchAllSystems } from '../api/SystemApi';
 import DataTable from '../components/common/DataTable';
 import ActionsCell from '../components/Fitur/ActionsCell';
 import EditModal from '../components/Fitur/EditModal';
+import DetailsModal from '../components/Fitur/DetailsModal.tsx';
 
 const Fitur = () => {
   const [fiturs, setFiturs] = useState([]);
@@ -14,7 +15,9 @@ const Fitur = () => {
   
   // Modal States
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [formData, setFormData] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   
   // Data for Dropdowns
   const [systems, setSystems] = useState([]);
@@ -99,6 +102,11 @@ const Fitur = () => {
     setShowModal(true);
   };
 
+  const handleViewFitur = (fitur) => {
+    setSelectedItem(fitur);
+    setShowDetailsModal(true);
+  };
+
   const handleSubmit = async () => {
     if (!formData) return;
     
@@ -156,9 +164,8 @@ const Fitur = () => {
   };
 
   const columns = [
-    { key: 'menu', label: 'Menu', searchable: true, sortable: true },
-    { key: 'route', label: 'Route', searchable: true, sortable: true },
-    { key: 'urutan', label: 'Order', searchable: true, sortable: true },
+    { key: 'menu', label: 'Modul', searchable: true, sortable: true },
+    { key: 'route', label: 'Deskripsi', searchable: true, sortable: true },
     {
       key: 'icon',
       label: 'Icon',
@@ -167,17 +174,6 @@ const Fitur = () => {
       render: (item) => (
         <span className="text-sm text-foreground">
           {item.icon || '-'}
-        </span>
-      )
-    },
-    {
-      key: 'showFiture',
-      label: 'Show Feature',
-      searchable: true,
-      sortable: true,
-      render: (item) => (
-        <span className="text-sm text-foreground">
-          {item.showFiture || '-'}
         </span>
       )
     },
@@ -212,7 +208,7 @@ const Fitur = () => {
       label: 'Actions',
       searchable: false,
       render: (item) => (
-        <ActionsCell item={item} onEdit={handleEditFitur} />
+        <ActionsCell item={item} onEdit={handleEditFitur} onView={handleViewFitur} />
       )
     }
   ];
@@ -242,6 +238,13 @@ const Fitur = () => {
         setSystemSearchTerm={setSystemSearchTerm}
         setIsSystemDropdownOpen={setIsSystemDropdownOpen}
         handleSubmit={handleSubmit}
+      />
+
+      <DetailsModal
+        showModal={showDetailsModal}
+        item={selectedItem}
+        systems={systems}
+        setShowModal={setShowDetailsModal}
       />
     </div>
   );

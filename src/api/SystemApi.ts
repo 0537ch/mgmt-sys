@@ -1,6 +1,7 @@
 import apiClient from './axiosConfig';
 
 const SYSTEM_ENDPOINT = import.meta.env.VITE_API_SISTEM_ENDPOINT
+const SYSTEM_CB = import.meta.env.VITE_API_SISTEM_ENDPOINT_CB
 const SAVE_DATA_ENDPOINT = import.meta.env.VITE_API_SISTEM_SAVE_DATA_ENDPOINT
 
 interface SystemItem {
@@ -16,61 +17,32 @@ interface SystemItem {
   token: string | null;
 }
 
-interface ApiData {
-  status?: string;
+interface ApiResponse<T> {
+  data?: T;
   message?: string;
-  data?: SystemItem[];
-  systems?: SystemItem[];
+  status?: string;
   [key: string]: any;
 }
 
-const transformSystemData = (apiData: ApiData | SystemItem[]): SystemItem[] => {
-  if (apiData && !Array.isArray(apiData) && apiData.status === "false") {
-    throw new Error(apiData.message || "API access denied");
-  }
+export const fetchAllSystems = async (): Promise<SystemItem[]> => {
+  try {
+    const response = await apiClient.get(SYSTEM_ENDPOINT);
+    const apiResponse: ApiResponse<SystemItem[]> = response.data;
 
-  const dataArray = Array.isArray(apiData) ? apiData : (apiData.data || apiData.systems || []);
-  
-  return dataArray.map((item: any, index: number): SystemItem => ({
-    id: item.id || index + 1,
-    nama: item.nama || '',
-    url: item.url || '',
-    destination: item.destination || '',
-    typeApi: item.typeApi || '',
-    status: item.status !== undefined ? item.status : true,
-    createdAt: item.createdAt || new Date().toISOString(),
-    updatedAt: item.updatedAt || item.createdAt || new Date().toISOString(),
-    headers: item.headers || '',
-    token: item.token || null
-  }));
-};
-
-export const fetchAllSystems = async (retryCount = 3) => {
-  const maxRetries = retryCount;
-  let currentAttempt = 0;
-  
-  while (currentAttempt < maxRetries) {
-    try {
-      const response = await apiClient.get(SYSTEM_ENDPOINT);
-      
-      const transformedData = transformSystemData(response.data);
-      
-      return transformedData;
-    } catch (error: unknown) {
-      currentAttempt++;
-      console.error(`Error fetching users (attempt ${currentAttempt}/${maxRetries}):`, error instanceof Error ? error.message : String(error));
-      
-      if (currentAttempt >= maxRetries) {
-        throw error;
-      }
-      
-      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, currentAttempt - 1)));
+    // Validasi: Pastikan data ada dan berupa array
+    if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
+      return [];
     }
+
+    return apiResponse.data;
+
+  } catch (error: unknown) {
+    console.error("Error in fetchAllSystems:", error instanceof Error ? error.message : String(error));
+    throw error;
   }
 };
 
-
-export const saveSystemData = async (systemData: Partial<SystemItem>) => {
+export const saveSystemData = async (systemData: Partial<SystemItem>): Promise<SystemItem> => {
   try {
     const dataToSave = {
       ...(systemData.id && { id: systemData.id }),
@@ -84,9 +56,35 @@ export const saveSystemData = async (systemData: Partial<SystemItem>) => {
     };
     
     const response = await apiClient.post(SAVE_DATA_ENDPOINT, dataToSave);
-    return response.data;
+    const apiResponse: ApiResponse<SystemItem> = response.data;
+
+    // Validasi response
+    if (!apiResponse.data) {
+      throw new Error('Failed to save system data');
+    }
+
+    return apiResponse.data;
+
   } catch (error: unknown) {
-    console.error('Save system data error:', error instanceof Error ? error.message : String(error));
+    console.error("Error in saveSystemData:", error instanceof Error ? error.message : String(error));
+    throw error;
+  }
+};
+
+export const fetchSystemsForComboBox = async (): Promise<SystemItem[]> => {
+  try {
+    const response = await apiClient.get(SYSTEM_CB);
+    const apiResponse: ApiResponse<SystemItem[]> = response.data;
+
+    // Validasi: Pastikan data ada dan berupa array
+    if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
+      return [];
+    }
+
+    return apiResponse.data;
+
+  } catch (error: unknown) {
+    console.error("Error in fetchSystemsForComboBox:", error instanceof Error ? error.message : String(error));
     throw error;
   }
 };

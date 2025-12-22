@@ -4,6 +4,7 @@ import { loginApi } from '../api/authApi'
 import { EyeSlashIcon } from '@heroicons/react/24/outline'
 import { EyeIcon } from '@heroicons/react/24/outline'
 import { ModeToggle } from '@/components/mode-toggle'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 function Login({ setIsAuthenticated }) {
   const [formData, setFormData] = useState({
@@ -39,16 +40,14 @@ function Login({ setIsAuthenticated }) {
       try {
         const response = await loginApi(formData.username, formData.password);
         
-        // Check if login is successful based on backend response format
         if (response.statusCode === 200 && response.message === "Login Berhasil") {
-          // Store authentication state (in real app, use proper auth tokens)
           localStorage.setItem('isAuthenticated', 'true');
           localStorage.setItem('user', JSON.stringify(response.data));
           if (response.token) {
             localStorage.setItem('token', response.token);
           }
           setIsAuthenticated(true);
-          navigate('/sistem');
+          navigate('/dashboard');
         } else {
           setError(response.message || 'Invalid credentials');
         }
@@ -67,11 +66,12 @@ function Login({ setIsAuthenticated }) {
         <ModeToggle />
       </div>
       
-      <div className="bg-card border border-border rounded-xl p-8 w-full max-w-md shadow-2xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Management System</h1>
-          <p className="text-muted-foreground">Sign in to your account</p>
-        </div>
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle className="text-center text-3xl">Management System</CardTitle>
+          <p className="text-muted-foreground text-center">Sign in to your account</p>
+        </CardHeader>
+        <CardContent>
         
         {error && (
           <div className="bg-destructive/15 border border-destructive/30 text-destructive p-3 rounded-lg mb-6 text-center">
@@ -126,7 +126,8 @@ function Login({ setIsAuthenticated }) {
             Sign In
           </button>
         </form>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

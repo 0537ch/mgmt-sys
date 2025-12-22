@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchSettingFeature } from '../api/settingfeature';
+import { fetchSettingFeature, saveAccGroupFeatures } from '../api/settingfeature';
 import { Link, Layers, Loader2, AlertCircle, ArrowLeft, Save } from 'lucide-react';
 
 // Shadcn UI Components
@@ -62,14 +62,17 @@ const SettingFeature = () => {
     }
   };
 
-  const handleSave = () => {
-    const selectedIds = Object.entries(selectedFeatures)
-      .filter(([_, isSelected]) => isSelected)
-      .map(([id, _]) => id);
-      
-    console.log('Saving features for group', accGroupId, selectedIds);
-    // Add your save API call here
-    navigate(-1); // Go back
+  const handleSave = async () => {
+    try {
+      const selectedIds = Object.entries(selectedFeatures)
+        .filter(([_, isSelected]) => isSelected)
+        .map(([id, _]) => id);
+        
+      await saveAccGroupFeatures(accGroupId, selectedIds);
+      navigate(-1); // Go back
+    } catch (err) {
+      setError(err.message || 'Failed to save feature settings');
+    }
   };
 
   // Helper to calculate stats

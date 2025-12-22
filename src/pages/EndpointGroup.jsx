@@ -49,10 +49,7 @@ const Dashboard = () => {
       ]);
       setMenuGroups(menuData);
       setSystems(systemsData);
-      // Set default idSistem to first available system if exists
-      if (systemsData.length > 0) {
-        setAddFormData(prev => ({ ...prev, idSistem: systemsData[0].id }));
-      }
+      // Don't set default idSistem to show placeholder in combobox
     } catch (error) {
       console.error("Error loading menu groups:", error);
       setError(error.message || 'Failed to load menu groups');
@@ -79,7 +76,7 @@ const Dashboard = () => {
     // Create a new empty menu group object for the form
     const newMenuGroup = {
       nama: '',
-      idSistem: systems.length > 0 ? systems[0].id : '',
+      idSistem: '', // Don't set a default value to show placeholder
       status: true
     };
     setEditingMenuGroup(newMenuGroup);
@@ -91,7 +88,7 @@ const Dashboard = () => {
     // Reset form data
     setAddFormData({
       nama: '',
-      idSistem: systems.length > 0 ? systems[0].id : '',
+      idSistem: '', // Don't set a default value to show placeholder
       status: true
     });
     // Reset editingMenuGroup to null
@@ -155,7 +152,7 @@ const Dashboard = () => {
       // Reset form after successful submission
       setAddFormData({
         nama: '',
-        idSistem: systems.length > 0 ? systems[0].id : '',
+        idSistem: '', // Don't set a default value to show placeholder
         status: true
       });
       // Close the modal

@@ -17,18 +17,25 @@ interface ApiResponse<T> {
   [key: string]: any;
 }
 
-export const fetchSettingFeature = async (idGroup: string = ''): Promise<SettingFeatureItem[]> => {
+export const fetchSettingFeature = async (idGroup: string = '') => {
   try {
     const fullUrl = `${SETTING_FEATURE}${idGroup}`;
     const response = await apiClient.get(fullUrl);
-    const apiResponse: ApiResponse<SettingFeatureItem[]> = response.data;
+    const apiResponse = response.data;
 
-    // Validasi: Pastikan data ada dan berupa array
-    if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
-      return [];
+    // Check if response has the expected structure
+    if (apiResponse.data && Array.isArray(apiResponse.data)) {
+      // Handle case where response is directly an array in data property
+      return { data: apiResponse.data };
+    } else if (apiResponse.data && apiResponse.data.all_menu) {
+      return apiResponse.data;
+    } else if (Array.isArray(apiResponse.data)) {
+      // Handle case where response is directly an array
+      return { data: apiResponse.data };
+    } else {
+      console.warn('Unexpected API response structure:', apiResponse);
+      return { data: [] }; // Return empty structure as fallback
     }
-
-    return apiResponse.data;
 
   } catch (error: unknown) {
     console.error("Error in fetchSettingFeature:", error instanceof Error ? error.message : String(error));
@@ -36,20 +43,16 @@ export const fetchSettingFeature = async (idGroup: string = ''): Promise<Setting
   }
 };
 
-export const saveSettingFeature = async (settingFeatureData: SettingFeatureItem): Promise<SettingFeatureItem> => {
+export const saveAccGroupFeatures = async (idGroup: string, selectedFeatures: object) => {
   try {
-    const response = await apiClient.post(SETTING_FEATURE, settingFeatureData);
-    const apiResponse: ApiResponse<SettingFeatureItem> = response.data;
-
-    // Validasi response
-    if (!apiResponse.data) {
-      throw new Error('Failed to save setting feature');
-    }
-
-    return apiResponse.data;
-
+    const fullUrl = `${SETTING_FEATURE}${idGroup}`;
+    console.log('Saving setting feature to URL:', fullUrl);
+    console.log('Selected features:', selectedFeatures);
+    
+    const response = await apiClient.post(fullUrl, selectedFeatures);
+    return response.data;
   } catch (error: unknown) {
-    console.error("Error in saveSettingFeature:", error instanceof Error ? error.message : String(error));
+    console.error("Error in saveAccGroupFeatures:", error instanceof Error ? error.message : String(error));
     throw error;
   }
 };

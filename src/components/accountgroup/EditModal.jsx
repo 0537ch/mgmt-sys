@@ -1,5 +1,5 @@
 import React from 'react';
-
+import SystemComboBox from '../ComboBox/SystemComboBox';
 const EditModal = ({
   showModal,
   formData,
@@ -161,47 +161,12 @@ const EditModal = ({
                 )}
               </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground">System</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  className="mt-1 block w-full px-3 py-2 bg-background border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-ring pr-8"
-                  placeholder="Search system..."
-                  value={systemSearchTerm}
-                  onChange={(e) => {
-                    setSystemSearchTerm(e.target.value);
-                    setIsSystemDropdownOpen(true);
-                  }}
-                  onClick={() => setIsSystemDropdownOpen(true)}
-                />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                  <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                     <path fillRule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                {isSystemDropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setIsSystemDropdownOpen(false)}></div>
-                    <ul className="absolute z-20 w-full mt-1 bg-popover border border-border rounded shadow-lg max-h-60 overflow-y-auto">
-                      {getFilteredSystems().length > 0 ? (
-                        getFilteredSystems().map((system) => (
-                          <li
-                            key={system.id}
-                            onClick={() => handleSelectSystem(system)}
-                            className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-sm"
-                          >
-                            {system.nama}
-                          </li>
-                        ))
-                      ) : (
-                        <li className="px-4 py-2 text-gray-500 text-sm italic">No systems found</li>
-                      )}
-                    </ul>
-                  </>
-                )}
-              </div>
-            </div>
+                          <SystemComboBox
+                           value={formData.idSistem}
+                           onValueChange={(value) => handleChange('idSistem', value)}
+                           placeholder="Select system..."
+                           className="w-full"
+                         />
             {/* Is Administrator Toggle */}
             <div>
               <label className="relative inline-flex items-center cursor-pointer">

@@ -13,6 +13,7 @@ const SettingMenu = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [accGroupData, setAccGroupData] = useState<{ codeGroup: string } | null>(null);
+  const [saveMessage, setSaveMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Tree State
   const [treeData, setTreeData] = useState<any[]>([]);
@@ -123,9 +124,13 @@ const SettingMenu = () => {
       const keysArray = Array.isArray(checkedKeys) ? checkedKeys : [];
       const finalMenuIds = keysArray.filter(key => !key.startsWith('sys-') && !key.startsWith('grp-'));
       await saveAccGroupMenus(accGroupData.codeGroup, finalMenuIds);
-      navigate(-1);
+      
+      setSaveMessage({ type: 'success', text: 'Menu settings saved successfully!' });
+      setTimeout(() => setSaveMessage(null), 3000);
     } catch (err: any) {
       setError(err.message || 'Failed to save menu settings');
+      setSaveMessage({ type: 'error', text: err.message || 'Failed to save menu settings' });
+      setTimeout(() => setSaveMessage(null), 3000);
     }
   };
 
@@ -181,6 +186,19 @@ const SettingMenu = () => {
             </h1>
           </div>
         </div>
+        
+        {/* Success/Error Alert */}
+        {saveMessage && (
+          <Alert className={`max-w-md ${saveMessage.type === 'success' ? 'border-green-200 bg-green-50 text-green-800' : ''}`} variant={saveMessage.type === 'error' ? 'destructive' : 'default'}>
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>
+              {saveMessage.type === 'success' ? 'Success' : 'Error'}
+            </AlertTitle>
+            <AlertDescription>
+              {saveMessage.text}
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
       
       {/* CHANGE 3: Scrollable Content Area (Fills remaining space) */}

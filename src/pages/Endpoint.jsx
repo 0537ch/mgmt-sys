@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchMenu, saveMenu } from '../api/menuApi';
-import { fetchMenuGroup } from '../api/menugroupApi';
 import DataTable from '../components/common/DataTable';
 import ActionsCell from '../components/Endpoint/ActionsCell';
 import EditModal from '../components/Endpoint/EditModal';
@@ -19,13 +18,6 @@ const Endpoint = () => {
   const [formData, setFormData] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
   
-  // Data for Dropdowns
-  const [menuGroups, setMenuGroups] = useState([]);
-  const [loadingMenuGroups, setLoadingMenuGroups] = useState(true);
-
-  // Searchable Dropdown States
-  const [groupSearchTerm, setGroupSearchTerm] = useState("");
-  const [isGroupDropdownOpen, setIsGroupDropdownOpen] = useState(false);
 
   
   const navigate = useNavigate();
@@ -43,18 +35,13 @@ const Endpoint = () => {
     setLoading(true);
     setError(null);
     try {
-      const [menuData, menuGroupsData] = await Promise.all([
-        fetchMenu(),
-        fetchMenuGroup()
-      ]);
+      const menuData = await fetchMenu();
       setMenus(menuData);
-      setMenuGroups(menuGroupsData);
     } catch (error) {
       console.error("Error loading menus:", error);
       setError(error.message || 'Failed to load menus');
     } finally {
       setLoading(false);
-      setLoadingMenuGroups(false);
     }
   };
 
@@ -72,31 +59,23 @@ const Endpoint = () => {
   };
 
   const handleAddNew = () => {
-    setGroupSearchTerm("");
     setFormData({
       isSidebar: false,
       nama: '',
       fitur: '',
       pathMenu: '',
-      group_menu: ''
+      group_menu: '',
+      noMenu: ''
     });
     setShowModal(true);
   };
 
   const handleEditMenu = (menu) => {
-    setFormData(menu);
-    // Extract group name properly - handle both ID and object cases
-    let groupName = "";
-    if (menu.group_menu) {
-      if (typeof menu.group_menu === 'object') {
-        groupName = menu.group_menu.nama;
-      } else {
-        // If it's just an ID, find the group name
-        const currentGroup = menuGroups.find(g => g.id === menu.group_menu);
-        groupName = currentGroup ? currentGroup.nama : "";
-      }
-    }
-    setGroupSearchTerm(groupName);
+    setFormData({
+      ...menu,
+      group_menu: typeof menu.group_menu === 'object' ? menu.group_menu.id : menu.group_menu,
+      noMenu: typeof menu.group_menu === 'object' ? menu.group_menu.id : menu.group_menu
+    });
     setShowModal(true);
   };
 
@@ -113,18 +92,14 @@ const Endpoint = () => {
       const isEdit = formData.id;
       
       // Extract the ID from group_menu if it's an object, otherwise use it directly
-      const groupId = formData.group_menu && typeof formData.group_menu === 'object'
-        ? formData.group_menu.id
-        : formData.group_menu;
-      
       // Struktur Data sesuai permintaan
       const dataToSend = {
         isSidebar: formData.isSidebar, // boolean
         nama: formData.nama,
         fitur: formData.fitur,
         pathMenu: formData.pathMenu,
-        group_menu: groupId, // ID only
-        noMenu: groupId // Use group_menu ID as noMenu
+        group_menu: formData.group_menu, // ID only
+        noMenu: formData.noMenu // Use group_menu ID as noMenu
       };
 
       // Add ID only for edit operations
@@ -137,8 +112,6 @@ const Endpoint = () => {
       
       setShowModal(false);
       setFormData(null);
-      setGroupSearchTerm("");
-      setIsGroupDropdownOpen(false);
       handleRefresh();
     } catch (error) {
       console.error(`Error ${formData.id ? 'updating' : 'saving'} menu:`, error);
@@ -148,6 +121,7 @@ const Endpoint = () => {
 
   const handleExport = (data) => {
     return data.map(item => ({
+      'System': item.group_menu.sistem,
       Name: item.nama || '',
       Feature: item.fitur || '',
       'Menu Path': item.pathMenu || '',
@@ -159,33 +133,18 @@ const Endpoint = () => {
   };
 
   const columns = [
-    { key: 'nama', label: 'Nama', searchable: true, sortable: true },
-    { key: 'fitur', label: 'Modul', searchable: true, sortable: true },
-    { key: 'pathMenu', label: 'Path', searchable: true, sortable: true },
-    { 
-      key: 'group_menu', 
-      label: 'Menu Group', 
-      searchable: true, 
-      sortable: true,
+    { key: 'system', label: 'Sistem', searchable: true, sortable: true,
       render: (item) => {
         if (item.group_menu && typeof item.group_menu === 'object') {
-            return item.group_menu.nama; // Ambil namanya saja
+            return item.group_menu.sistem.nama; 
         }
-        return item.group_menu; // Jika ternyata string/number, tampilkan apa adanya
+        return item.group_menu;
       }
     },
-    {
-      key: 'isSidebar',
-      label: 'Is Sidebar?',
-      searchable: true,
-      sortable: true,
-      exportable: true,
-      isBoolean: true,
-      trueLabel: 'Yes',
-      falseLabel: 'No',
-      trueColor: 'bg-emerald-100 text-emerald-800',
-      falseColor: 'bg-slate-100 text-slate-800'
-    },
+    { key: 'pathMenu', label: 'Endpoint', searchable: true, sortable: true },
+    { key: 'fitur', label: 'Deskripsi', searchable: true, sortable: true },
+    { key: 'baseurl', label: 'Base URL', searchable: true, sortable: true },
+    { key: 'nama', label: 'Nama', searchable: true, sortable: true },
     { 
       key: 'actions', 
       label: 'Actions', 
@@ -212,13 +171,8 @@ const Endpoint = () => {
       <EditModal
         showModal={showModal}
         formData={formData}
-        menuGroups={menuGroups}
-        groupSearchTerm={groupSearchTerm}
-        isGroupDropdownOpen={isGroupDropdownOpen}
         setFormData={setFormData}
         setShowModal={setShowModal}
-        setGroupSearchTerm={setGroupSearchTerm}
-        setIsGroupDropdownOpen={setIsGroupDropdownOpen}
         handleSubmit={handleSubmit}
       />
 
