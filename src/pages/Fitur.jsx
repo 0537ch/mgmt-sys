@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchFitur, saveFitur } from '../api/fiturApi';
 import { fetchAllSystems } from '../api/SystemApi';
 import DataTable from '../components/common/DataTable';
@@ -12,32 +11,19 @@ const Fitur = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   // Modal States
   const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [formData, setFormData] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null);
-  
+
   // Data for Dropdowns
   const [systems, setSystems] = useState([]);
-  const [loadingSystems, setLoadingSystems] = useState(true);
-
-  // Searchable Dropdown States
-  const [systemSearchTerm, setSystemSearchTerm] = useState("");
-  const [isSystemDropdownOpen, setIsSystemDropdownOpen] = useState(false);
-
-  
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
     loadData();
-  }, [navigate]);
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -50,11 +36,10 @@ const Fitur = () => {
       setFiturs(fiturData);
       setSystems(systemsData);
     } catch (error) {
-      console.error("Error loading fiturs:", error);
-      setError(error.message || 'Failed to load fiturs');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load fiturs';
+      setError(errorMessage);
     } finally {
       setLoading(false);
-      setLoadingSystems(false);
     }
   };
 
@@ -64,15 +49,14 @@ const Fitur = () => {
       const data = await fetchFitur();
       setFiturs(data);
     } catch (error) {
-      console.error("Error refreshing data:", error);
-      setError(error.message || 'Failed to refresh data');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to refresh data';
+      setError(errorMessage);
     } finally {
       setRefreshing(false);
     }
   };
 
   const handleAddNew = () => {
-    setSystemSearchTerm("");
     setFormData({
       menu: '',
       route: '',
@@ -87,18 +71,6 @@ const Fitur = () => {
 
   const handleEditFitur = (fitur) => {
     setFormData(fitur);
-    // Extract system name properly - handle both ID and object cases
-    let systemName = "";
-    if (fitur.idSistem) {
-      if (typeof fitur.idSistem === 'object') {
-        systemName = fitur.idSistem.nama;
-      } else {
-        // If it's just an ID, find the system name
-        const currentSystem = systems.find(s => s.id === fitur.idSistem);
-        systemName = currentSystem ? currentSystem.nama : "";
-      }
-    }
-    setSystemSearchTerm(systemName);
     setShowModal(true);
   };
 
@@ -109,43 +81,36 @@ const Fitur = () => {
 
   const handleSubmit = async () => {
     if (!formData) return;
-    
+
     try {
-      // Determine if this is an add or edit operation based on whether formData has an id
       const isEdit = formData.id;
-      
-      // Extract the ID from idSistem if it's an object, otherwise use it directly
+
       const sistemId = formData.idSistem && typeof formData.idSistem === 'object'
         ? formData.idSistem.id
         : formData.idSistem;
-      
-      // Struktur Data sesuai permintaan
+
       const dataToSend = {
         menu: formData.menu,
         route: formData.route,
-        urutan: parseInt(formData.urutan) || 0, // Convert to number
+        urutan: parseInt(formData.urutan) || 0,
         icon: formData.icon,
         showFiture: formData.showFiture,
         status: formData.status,
-        idSistem: parseInt(sistemId) || 0 // Convert to number
+        idSistem: parseInt(sistemId) || 0
       };
 
-      // Add ID only for edit operations
       if (isEdit) {
         dataToSend.id = formData.id;
       }
 
       await saveFitur(dataToSend);
-      console.log(`Fitur ${isEdit ? 'updated' : 'saved'} successfully:`, dataToSend);
-      
+
       setShowModal(false);
       setFormData(null);
-      setSystemSearchTerm("");
-      setIsSystemDropdownOpen(false);
       handleRefresh();
     } catch (error) {
-      console.error(`Error ${formData.id ? 'updating' : 'saving'} fitur:`, error);
-      alert(`Error ${formData.id ? 'updating' : 'saving'} fitur: ` + error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      alert(`Error ${formData.id ? 'updating' : 'saving'} fitur: ` + errorMessage);
     }
   };
 
@@ -186,8 +151,8 @@ const Fitur = () => {
       isBoolean: true,
       trueLabel: 'Active',
       falseLabel: 'Inactive',
-      trueColor: 'bg-green-100 text-green-800',
-      falseColor: 'bg-red-100 text-red-800'
+      trueColor: 'bg-green-500/10 text-green-700 dark:text-green-400',
+      falseColor: 'bg-red-500/10 text-red-700 dark:text-red-400'
     },
     {
       key: 'idSistem',
@@ -230,13 +195,8 @@ const Fitur = () => {
       <EditModal
         showModal={showModal}
         formData={formData}
-        systems={systems}
-        systemSearchTerm={systemSearchTerm}
-        isSystemDropdownOpen={isSystemDropdownOpen}
         setFormData={setFormData}
         setShowModal={setShowModal}
-        setSystemSearchTerm={setSystemSearchTerm}
-        setIsSystemDropdownOpen={setIsSystemDropdownOpen}
         handleSubmit={handleSubmit}
       />
 

@@ -1,17 +1,11 @@
 import React from 'react';
 import { PencilIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
-
-interface Account {
-  id: string | number;
-  nipp: string;
-  email: string;
-  [key: string]: any;
-}
+import type { AccountItem } from '@/api/accountApi';
 
 interface ActionsCellProps {
-  item: Account;
-  onEdit: (account: Account) => void;
-  onResetMac?: (account: Account) => void;
+  item: AccountItem;
+  onEdit: (account: AccountItem) => void;
+  onResetMac?: (account: AccountItem) => void;
 }
 
 const ActionsCell: React.FC<ActionsCellProps> = ({ item, onEdit, onResetMac }) => {
@@ -34,7 +28,7 @@ const ActionsCell: React.FC<ActionsCellProps> = ({ item, onEdit, onResetMac }) =
         <PencilIcon className="h-4 w-4" />
       </button>
       <button
-        className="text-orange-600 hover:text-orange-900 transition-colors"
+        className="text-orange-600 hover:text-orange-800 dark:text-orange-400 dark:hover:text-orange-300 transition-colors"
         onClick={handleResetMac}
         title="Reset MAC Address"
       >

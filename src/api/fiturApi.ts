@@ -22,7 +22,6 @@ export const fetchFitur = async (): Promise<FiturItem[]> => {
     const response = await apiClient.get(ENDPOINT_FITUR);
     const apiResponse: ApiResponse<FiturItem[]> = response.data;
 
-    // Validasi: Pastikan data ada dan berupa array
     if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
       return [];
     }
@@ -40,7 +39,6 @@ export const saveFitur = async (fiturData: FiturItem): Promise<FiturItem> => {
     const response = await apiClient.post(ENDPOINT_FITUR_SAVE, fiturData);
     const apiResponse: ApiResponse<FiturItem> = response.data;
 
-    // Validasi response
     if (!apiResponse.data) {
       throw new Error('Failed to save fitur');
     }

@@ -1,53 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import SystemComboBox from '../ComboBox/SystemComboBox';
 
 const EditModal = ({
   showModal,
   formData,
-  systems,
-  systemSearchTerm,
-  isSystemDropdownOpen,
   setFormData,
   setShowModal,
-  setSystemSearchTerm,
-  setIsSystemDropdownOpen,
   handleSubmit
 }) => {
   if (!showModal) {
     return null;
   }
 
-  // Determine if this is an edit operation based on whether formData has an id
   const isEdit = formData && formData.id;
-
-  const getFilteredSystems = () => {
-    return systems.filter((system) =>
-      system.nama.toLowerCase().includes(systemSearchTerm.toLowerCase())
-    );
-  };
-
-  const handleSelectSystem = (system) => {
-    setFormData({ ...formData, idSistem: system.id });
-    setSystemSearchTerm(system.nama);
-    setIsSystemDropdownOpen(false);
-  };
 
   const handleCloseForm = () => {
     setShowModal(false);
     if (!isEdit) {
-      // Reset form data only for add mode
-      setFormData({
-        menu: '',
-        route: '',
-        urutan: '',
-        icon: '',
-        showFiture: '',
-        status: true,
-        idSistem: ''
-      });
+      setFormData(null);
     }
-    setSystemSearchTerm("");
-    setIsSystemDropdownOpen(false);
   };
 
   const handleFormSubmit = (e) => {
@@ -118,20 +89,20 @@ const EditModal = ({
             {/* System ComboBox */}
             <div className="relative z-[10001]">
               <label className="block text-sm font-medium text-foreground mb-1">System</label>
-                <SystemComboBox
-                  value={formData.idSistem}
-                  onValueChange={(value) => handleChange('idSistem', value)}
-                  placeholder="Select system..."
-                  className="w-full"
-                />
+              <SystemComboBox
+                value={typeof formData.idSistem === 'number' ? formData.idSistem : undefined}
+                onValueChange={(value) => setFormData({ ...formData, idSistem: value })}
+                placeholder="Select system..."
+                className="w-full"
+              />
             </div>
 
             {/* Input Show Feature */}
             <div>
-              <label className="block text-sm font-medium mb-1">Show Feature</label>
+              <label className="block text-sm font-medium text-foreground mb-1">Show Feature</label>
               <input
                 type="text"
-                className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full border border-input bg-background p-2 rounded focus:ring-2 focus:ring-ring focus:outline-none"
                 value={formData.showFiture || ''}
                 onChange={(e) => setFormData({...formData, showFiture: e.target.value})}
                 placeholder="Enter show feature value"

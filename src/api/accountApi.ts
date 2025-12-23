@@ -3,12 +3,13 @@ import apiClient from './axiosConfig';
 const ENDPOINT_ACC = import.meta.env.VITE_API_ACC_ENDPOINT;
 const ENDPOINT_ACC_SAVE = import.meta.env.VITE_API_ACC_SAVE;
 
-interface AccountItem {
+export type AccountItem = {
   id?: number;
+  nipp?: string;
   username?: string;
   email?: string;
   [key: string]: any;
-}
+};
 
 interface ApiResponse<T> {
   data?: T;
@@ -22,7 +23,6 @@ export const fetchAccounts = async (): Promise<AccountItem[]> => {
     const response = await apiClient.get(ENDPOINT_ACC);
     const apiResponse: ApiResponse<AccountItem[]> = response.data;
 
-    // Validasi: Pastikan data ada dan berupa array
     if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
       return [];
     }
@@ -40,7 +40,6 @@ export const saveAccount = async (accountData: AccountItem): Promise<AccountItem
     const response = await apiClient.post(ENDPOINT_ACC_SAVE, accountData);
     const apiResponse: ApiResponse<AccountItem> = response.data;
 
-    // Validasi response
     if (!apiResponse.data) {
       throw new Error('Failed to save account');
     }
