@@ -1,18 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchAllSystems } from '@/api/SystemApi';
-
-interface SystemItem {
-  id?: number;
-  nama: string;
-  url: string;
-  destination: string;
-  typeApi: string;
-  status: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  headers: string;
-  token: string | null;
-}
+import type { SystemItem } from '@/api/SystemApi';
 
 interface UseSystemsReturn {
   systems: SystemItem[];

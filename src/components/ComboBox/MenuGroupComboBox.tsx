@@ -20,21 +20,14 @@ export function MenuGroupComboBox({
 }: MenuGroupComboBoxProps) {
   const { data: menuGroups, loading, error, refetch } = useApiData(fetchMenuGroupSelect);
 
-  // Debug logging
-  React.useEffect(() => {
-    console.log('Menu groups data:', menuGroups);
-    console.log('Loading:', loading);
-    console.log('Error:', error);
-  }, [menuGroups, loading, error]);
-
   // Transform menu groups to ComboBox options
-  const options: ComboBoxOption[] = React.useMemo(() => 
-    menuGroups.map(menuGroup => ({
-      value: menuGroup.id || 0,
-      label: menuGroup.nama || menuGroup.label || 'Unknown' // Use nama or label field
-    })),
-    [menuGroups]
-  );
+  const options: ComboBoxOption[] = React.useMemo(() => {
+    const opts = menuGroups.map(menuGroup => ({
+      value: menuGroup.value,
+      label: menuGroup.label,
+    }));
+    return opts.filter(opt => opt.value !== undefined && opt.value !== null);
+  }, [menuGroups]);
 
   if (error) {
     return (
@@ -50,11 +43,14 @@ export function MenuGroupComboBox({
     );
   }
 
+  // Ensure value type matches options (API returns strings)
+  const normalizedValue = value !== undefined ? String(value) : undefined;
+
   return (
     <ComboBox
       options={options}
-      value={value}
-      onValueChange={(val) => onValueChange && onValueChange(val as number)}
+      value={normalizedValue}
+      onValueChange={(val) => onValueChange && onValueChange(Number(val))}
       placeholder={placeholder}
       className={className}
       loading={loading}

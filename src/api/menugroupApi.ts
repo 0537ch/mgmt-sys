@@ -6,14 +6,20 @@ const ENDPOINT_SELECT = import.meta.env.VITE_API_MENU_GROUP_CB;
 
 const ENDPOINT_SAVE = import.meta.env.VITE_API_MENU_GROUP_SAVE;
 
-interface MenuGroupItem {
+export type MenuGroupItem = {
   id?: number;
-  nama?: string;
-  value?: string;
-  label?: string;
-  sistem?: string;
-  [key: string]: any;
-}
+  nama: string;
+  idSistem?: string;
+  status?: boolean;
+  isAdministrator?: boolean;
+  sistem?: {
+    nama: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+};
 
 interface ApiResponse<T> {
   data?: T;
@@ -27,7 +33,6 @@ export const fetchMenuGroup = async (): Promise<MenuGroupItem[]> => {
     const response = await apiClient.get(ENDPOINT_LIST);
     const apiResponse: ApiResponse<MenuGroupItem[]> = response.data;
 
-    // Validasi: Pastikan data ada dan berupa array
     if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
       return [];
     }
@@ -41,20 +46,17 @@ export const fetchMenuGroup = async (): Promise<MenuGroupItem[]> => {
 };
 
 /**
- * Mengambil data ringan untuk Dropdown/Select Input
- * Endpoint: .../get_data_cb
+ * Fetch lightweight data for Dropdown/Select Input
  */
 export const fetchMenuGroupSelect = async (): Promise<MenuGroupItem[]> => {
   try {
     const response = await apiClient.get(ENDPOINT_SELECT);
     const apiResponse: ApiResponse<MenuGroupItem[]> = response.data;
 
-    // Validasi
     if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
       return [];
     }
 
-    // Mengembalikan array opsi (value, label, sistem)
     return apiResponse.data;
 
   } catch (error: unknown) {

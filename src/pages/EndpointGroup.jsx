@@ -1,61 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchMenuGroup, saveMenuGroup } from '../api/menugroupApi';
-import { fetchAllSystems } from '../api/SystemApi';
 import DataTable from '../components/common/DataTable';
 import EditModal from '../components/menugroup/EditModal';
 import DetailsModal from '../components/menugroup/DetailsModal';
 import ActionsCell from '../components/menugroup/ActionsCell';
 
-const Dashboard = () => {
+const EndpointGroupManagement = () => {
   const [menuGroups, setMenuGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [editingMenuGroup, setEditingMenuGroup] = useState(null);
   const [detailsMenuGroup, setDetailsMenuGroup] = useState(null);
-  const [systems, setSystems] = useState([]);
-  const [addFormData, setAddFormData] = useState({
-    nama: '',
-    idSistem: '',
-    status: true
-  });
-  const [loadingSystems, setLoadingSystems] = useState(true);
-  
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem('isAuthenticated');
-    if (!isAuthenticated) {
-      navigate('/login');
-      return;
-    }
-    
-    // Load initial data
     loadData();
-  }, [navigate]);
+  }, []);
 
   const loadData = async () => {
     setLoading(true);
     setError(null);
     try {
-      const [menuData, systemsData] = await Promise.all([
-        fetchMenuGroup(),
-        fetchAllSystems()
-      ]);
+      const menuData = await fetchMenuGroup();
       setMenuGroups(menuData);
-      setSystems(systemsData);
-      // Don't set default idSistem to show placeholder in combobox
     } catch (error) {
       console.error("Error loading menu groups:", error);
       setError(error.message || 'Failed to load menu groups');
     } finally {
       setLoading(false);
-      setLoadingSystems(false);
     }
   };
 
@@ -73,31 +47,19 @@ const Dashboard = () => {
   };
 
   const handleAddNew = () => {
-    // Create a new empty menu group object for the form
     const newMenuGroup = {
       nama: '',
-      idSistem: '', // Don't set a default value to show placeholder
-      status: true
+      idSistem: '',
+      status: true,
+      isAdministrator: false
     };
     setEditingMenuGroup(newMenuGroup);
-    setShowAddForm(true);
-  };
-
-  const handleCloseForm = () => {
-    setShowAddForm(false);
-    // Reset form data
-    setAddFormData({
-      nama: '',
-      idSistem: '', // Don't set a default value to show placeholder
-      status: true
-    });
-    // Reset editingMenuGroup to null
-    setEditingMenuGroup(null);
+    setShowModal(true);
   };
 
   const handleEditMenuGroup = (menuGroup) => {
     setEditingMenuGroup(menuGroup);
-    setShowEditModal(true);
+    setShowModal(true);
   };
 
   const handleShowDetails = (menuGroup) => {
@@ -105,63 +67,44 @@ const Dashboard = () => {
     setShowDetailsModal(true);
   };
 
-  const handleCancelEdit = () => {
-    setEditingMenuGroup(null);
-    setShowEditModal(false);
-  };
-
   const handleCloseDetails = () => {
     setDetailsMenuGroup(null);
     setShowDetailsModal(false);
   };
 
-  const handleUpdateMenuGroup = async (data) => {
-    try {
-      // The data parameter contains the updated form values from EditModal
-      const dataToSend = {
-        id: data.id,
-        nama: data.nama,
-        idSistem: data.idSistem,
-        status: data.status
-      };
-      
-      await saveMenuGroup(dataToSend);
-      
-      // Refresh the data to show updated changes
-      handleRefresh();
-      
-      setEditingMenuGroup(null);
-      setShowEditModal(false);
-    } catch (error) {
-      console.error("Error updating menu group:", error);
-      alert('Error updating menu group: ' + error.message);
-    }
+  const handleCloseModal = () => {
+    setEditingMenuGroup(null);
+    setShowModal(false);
   };
 
-  const handleAddSubmit = async (data) => {
+  const handleSave = async (data) => {
     try {
-      // Create the data object in the format expected by the API
-      const dataToSend = {
-        nama: data.nama,
-        idSistem: data.idSistem,
-        status: data.status,
-        isAdministrator: data.isAdministrator || false
-      };
-      
-      const response = await saveMenuGroup(dataToSend);
-      // Reset form after successful submission
-      setAddFormData({
-        nama: '',
-        idSistem: '', // Don't set a default value to show placeholder
-        status: true
-      });
-      // Close the modal
-      setShowAddForm(false);
-      // Refresh the data to show the new item
+      if (editingMenuGroup?.id) {
+        // Update existing menu group
+        const dataToSend = {
+          id: data.id,
+          nama: data.nama,
+          idSistem: data.idSistem,
+          status: data.status,
+          isAdministrator: data.isAdministrator || false
+        };
+        await saveMenuGroup(dataToSend);
+      } else {
+        // Add new menu group
+        const dataToSend = {
+          nama: data.nama,
+          idSistem: data.idSistem,
+          status: data.status,
+          isAdministrator: data.isAdministrator || false
+        };
+        await saveMenuGroup(dataToSend);
+      }
+
       handleRefresh();
+      handleCloseModal();
     } catch (error) {
       console.error("Error saving menu group:", error);
-      // You might want to show an error message to the user
+      alert('Error saving menu group: ' + error.message);
     }
   };
 
@@ -231,27 +174,16 @@ const Dashboard = () => {
         onExport={handleExport}
         refreshing={refreshing}
       />
-      
-      {/* Add Menu Form Modal */}
-      {showAddForm && (
+
+      {/* Edit/Add Modal */}
+      {showModal && editingMenuGroup && (
         <EditModal
           editingMenuGroup={editingMenuGroup}
-          onSave={handleAddSubmit}
-          onCancel={handleCloseForm}
-          systems={systems}
+          onSave={handleSave}
+          onCancel={handleCloseModal}
         />
       )}
-      
-      {/* Edit Menu Group Modal */}
-      {showEditModal && editingMenuGroup && (
-        <EditModal
-          editingMenuGroup={editingMenuGroup}
-          onSave={handleUpdateMenuGroup}
-          onCancel={handleCancelEdit}
-          systems={systems}
-        />
-      )}
-      
+
       <DetailsModal
         detailsMenuGroup={detailsMenuGroup}
         onClose={handleCloseDetails}
@@ -260,5 +192,5 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default EndpointGroupManagement;
 

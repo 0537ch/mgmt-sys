@@ -1,18 +1,18 @@
 import React from 'react';
 
-const EditModal = ({ editingUser, onSave, onCancel }) => {
-  if (!editingUser) {
+const EditModal = ({ editingSystem, onSave, onCancel }) => {
+  if (!editingSystem) {
     return null;
   }
 
   const [formData, setFormData] = React.useState({
-    nama: editingUser?.nama || '',
-    url: editingUser?.url || '',
-    destination: editingUser?.destination || '',
-    typeApi: editingUser?.typeApi || 'not_token',
-    status: editingUser?.status !== undefined ? editingUser.status : true,
-    headers: editingUser?.headers || '{"Accept":"application/json"}',
-    token: editingUser?.token || ''
+    nama: editingSystem?.nama || '',
+    url: editingSystem?.url || '',
+    destination: editingSystem?.destination || '',
+    typeApi: editingSystem?.typeApi || 'not_token',
+    status: editingSystem?.status !== undefined ? editingSystem.status : true,
+    headers: editingSystem?.headers || '{"Accept":"application/json"}',
+    token: editingSystem?.token || ''
   });
 
   const handleChange = (field, value) => {
@@ -24,9 +24,9 @@ const EditModal = ({ editingUser, onSave, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const dataToSave = {
-      ...(editingUser?.id && { id: editingUser.id }),
+      ...(editingSystem?.id && { id: editingSystem.id }),
       ...formData
     };
 
@@ -38,7 +38,7 @@ const EditModal = ({ editingUser, onSave, onCancel }) => {
       <div className="relative bg-card rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] m-4 z-10000 border border-border/50">
         <div className="flex justify-between items-center p-6 border-b border-border">
           <h3 className="text-lg font-medium text-foreground">
-            {editingUser?.id ? 'Edit System Configuration' : 'Add New System Configuration'}
+            {editingSystem?.id ? 'Edit System Configuration' : 'Add New System Configuration'}
           </h3>
           <button
             className="text-muted-foreground hover:text-foreground text-2xl font-light leading-none"
@@ -141,7 +141,7 @@ const EditModal = ({ editingUser, onSave, onCancel }) => {
             className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-md transition-colors"
             onClick={handleSubmit}
           >
-            {editingUser?.id ? 'Update Configuration' : 'Save Configuration'}
+            {editingSystem?.id ? 'Update Configuration' : 'Save Configuration'}
           </button>
         </div>
       </div>

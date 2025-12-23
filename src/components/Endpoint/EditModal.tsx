@@ -1,40 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import MenuGroupComboBox from '../ComboBox/MenuGroupComboBox';
+import type { MenuItem } from '../../api/menuApi';
+
+interface EditModalProps {
+  showModal: boolean;
+  formData: Partial<MenuItem> | null;
+  setFormData: (data: Partial<MenuItem> | null) => void;
+  setShowModal: (show: boolean) => void;
+  handleSubmit: () => void;
+}
 
 const EditModal = ({
   showModal,
   formData,
-  menuGroups,
-  groupSearchTerm,
-  isGroupDropdownOpen,
   setFormData,
   setShowModal,
-  setGroupSearchTerm,
-  setIsGroupDropdownOpen,
   handleSubmit
-}) => {
-  if (!showModal) {
+}: EditModalProps) => {
+  if (!showModal || !formData) {
     return null;
   }
 
   // Determine if this is an edit operation based on whether formData has an id
   const isEdit = formData && formData.id;
-
-  const getFilteredGroups = () => {
-    return menuGroups.filter((group) =>
-      group.nama.toLowerCase().includes(groupSearchTerm.toLowerCase())
-    );
-  };
-
-  const handleSelectGroup = (group) => {
-    setFormData({
-      ...formData,
-      group_menu: group.id,
-      noMenu: group.id // Update noMenu field as well
-    });
-    setGroupSearchTerm(group.nama);
-    setIsGroupDropdownOpen(false);
-  };
 
   const handleCloseForm = () => {
     setShowModal(false);
@@ -45,13 +33,13 @@ const EditModal = ({
         nama: '',
         fitur: '',
         pathMenu: '',
-        group_menu: '',
-        noMenu: ''
+        group_menu: undefined,
+        noMenu: undefined
       });
     }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     handleSubmit();
   };
@@ -75,7 +63,7 @@ const EditModal = ({
                 type="text"
                 className="w-full border border-input bg-background p-2 rounded focus:ring-2 focus:ring-ring focus:outline-none"
                 value={formData.nama || ''}
-                onChange={(e) => setFormData({...formData, nama: e.target.value})}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, nama: e.target.value})}
                 required
               />
             </div>
@@ -87,7 +75,7 @@ const EditModal = ({
                 type="text"
                 className="w-full border border-input bg-background p-2 rounded focus:ring-2 focus:ring-ring focus:outline-none"
                 value={formData.fitur || ''}
-                onChange={(e) => setFormData({...formData, fitur: e.target.value})}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, fitur: e.target.value})}
                 required
               />
             </div>
@@ -99,7 +87,7 @@ const EditModal = ({
                 type="text"
                 className="w-full border border-input bg-background p-2 rounded focus:ring-2 focus:ring-ring focus:outline-none"
                 value={formData.pathMenu || ''}
-                onChange={(e) => setFormData({...formData, pathMenu: e.target.value})}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, pathMenu: e.target.value})}
                 required
               />
             </div>
@@ -108,11 +96,15 @@ const EditModal = ({
             <div className="relative z-[10001]">
               <label className="block text-sm font-medium text-foreground mb-1">Endpoint Group</label>
               <MenuGroupComboBox
-                value={formData.group_menu}
+                value={
+                  typeof formData.group_menu === 'object' && formData.group_menu !== null && 'id' in formData.group_menu
+                    ? (formData.group_menu as any).id
+                    : formData.group_menu
+                }
                 onValueChange={(value) => setFormData({
                   ...formData,
                   group_menu: value,
-                  noMenu: value // Update noMenu field as well
+                  noMenu: value
                 })}
                 placeholder="Select menu group..."
                 className="w-full"
@@ -126,7 +118,7 @@ const EditModal = ({
                 type="checkbox"
                 className="h-5 w-5 text-primary border-input bg-background rounded focus:ring-ring"
                 checked={formData.isSidebar || false}
-                onChange={(e) => setFormData({...formData, isSidebar: e.target.checked})}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, isSidebar: e.target.checked})}
               />
               <label htmlFor="isSidebar" className="text-sm font-medium text-foreground select-none">
                 Show in Sidebar (True/False)

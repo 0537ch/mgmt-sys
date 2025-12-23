@@ -1,5 +1,5 @@
 import { ChevronRight, type LucideIcon } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 
 import {
   Collapsible,
@@ -33,15 +33,16 @@ export function NavMain({
   }[]
 }) {
   const navigate = useNavigate()
+  const location = useLocation()
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
-          <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
+          <Collapsible key={item.title} asChild defaultOpen={item.isActive} open={location.pathname === item.url ? true : undefined}>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip={item.title} onClick={() => navigate(item.url)}>
+              <SidebarMenuButton tooltip={item.title} onClick={() => navigate(item.url)} isActive={location.pathname === item.url}>
                 <item.icon />
                 <span>{item.title}</span>
               </SidebarMenuButton>
@@ -57,7 +58,7 @@ export function NavMain({
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton onClick={() => navigate(subItem.url)}>
+                          <SidebarMenuSubButton onClick={() => navigate(subItem.url)} isActive={location.pathname === subItem.url}>
                             <span>{subItem.title}</span>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>

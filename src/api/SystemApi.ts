@@ -4,7 +4,7 @@ const SYSTEM_ENDPOINT = import.meta.env.VITE_API_SISTEM_ENDPOINT
 const SYSTEM_CB = import.meta.env.VITE_API_SISTEM_ENDPOINT_CB
 const SAVE_DATA_ENDPOINT = import.meta.env.VITE_API_SISTEM_SAVE_DATA_ENDPOINT
 
-interface SystemItem {
+export type SystemItem = {
   id?: number;
   nama: string;
   url: string;
@@ -15,7 +15,7 @@ interface SystemItem {
   updatedAt?: string;
   headers: string;
   token: string | null;
-}
+};
 
 interface ApiResponse<T> {
   data?: T;

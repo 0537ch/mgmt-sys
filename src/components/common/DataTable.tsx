@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import type { WorkBook } from 'xlsx';
-import { ArrowDownTrayIcon, ArrowPathIcon, PlusIcon, CheckCircleIcon, XCircleIcon, } from '@heroicons/react/24/outline';
-import {Disc} from "lucide-react"
+import { ArrowDownTrayIcon, ArrowPathIcon, PlusIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { Disc } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Define TypeScript interfaces for the DataTable props
 interface Column {
@@ -156,18 +157,12 @@ const DataTable = ({
   const totalPages = Math.ceil(sortedData.length / itemsPerPage);
 
   const exportToExcel = () => {
-    console.log('Export button clicked'); // Debug log
-    console.log('Sorted data length:', sortedData.length); // Debug log
-    
     try {
       let exportData;
-      
+
       if (onExport) {
-        console.log('Calling onExport callback'); // Debug log
         exportData = onExport(sortedData);
-        console.log('Export data received from callback:', exportData?.length, 'rows'); // Debug log
       } else {
-        console.log('Using default export functionality'); // Debug log
         // Default export functionality
         exportData = sortedData.map((item: DataItem) => {
           const exportItem: Record<string, any> = {};
@@ -196,7 +191,6 @@ const DataTable = ({
           });
           return exportItem;
         });
-        console.log('Export data prepared:', exportData.length, 'rows'); // Debug log
       }
 
       // Create and download the Excel file
@@ -204,16 +198,11 @@ const DataTable = ({
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb: WorkBook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, title || "Data");
-        
+
         const today = new Date().toLocaleDateString().replace(/\//g, '-');
         const fileName = `${(title || '').toLowerCase().replace(/\s+/g, '_')}_data_${today}.xlsx`;
-        console.log('Writing file:', fileName); // Debug log
-        
-        // Use XLSX.write with proper typing
+
         XLSX.writeFile(wb, fileName);
-        console.log('File written successfully'); // Debug log
-      } else {
-        console.warn('No data to export');
       }
     } catch (error) {
       console.error('Error exporting to Excel:', error);
@@ -235,7 +224,6 @@ const DataTable = ({
         
         const fileName = `${(title || 'data')}.xlsx`;
         XLSX.writeFile(wb, fileName);
-        console.log('Fallback export successful');
       } catch (fallbackError) {
         console.error('Fallback export also failed:', fallbackError);
       }
@@ -244,10 +232,59 @@ const DataTable = ({
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-full"> {/* Changed h-64 to h-full */}
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-2 text-muted-foreground">Loading {title?.toLowerCase() || 'data'.toLowerCase()}...</p>
+      <div className="h-full flex flex-col gap-4">
+        {/* Header Skeleton */}
+        <div className="shrink-0">
+          <Skeleton className="h-7 w-48 mb-4" />
+          <div className="flex items-center space-x-4">
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-10 w-10 rounded-lg" />
+            <Skeleton className="h-10 w-10 rounded-lg" />
+          </div>
+        </div>
+
+        {/* Table Skeleton */}
+        <div className="flex-1 min-h-0 bg-card rounded-xl shadow-lg flex flex-col overflow-hidden border border-border/50">
+          <div className="overflow-y-auto">
+            <table className="w-full">
+              {/* Header Skeleton */}
+              <thead className="bg-card-dark sticky top-0 z-10 border-b border-border shadow-sm">
+                <tr>
+                  {columns.map((column, index) => (
+                    <th key={index} className="px-6 py-3 text-left">
+                      <Skeleton className="h-4 w-24 mb-2" />
+                      <Skeleton className="h-8 w-full" />
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              {/* Body Skeleton */}
+              <tbody className="divide-y divide-border">
+                {Array.from({ length: itemsPerPage }).map((_, rowIndex) => (
+                  <tr key={rowIndex}>
+                    {columns.map((column, colIndex) => (
+                      <td key={colIndex} className="px-6 py-4">
+                        <Skeleton className="h-4 w-full max-w-[200px]" />
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Skeleton */}
+          <div className="flex justify-between items-center px-6 py-4 border-t border-border bg-card shrink-0">
+            <Skeleton className="h-4 w-48" />
+            <div className="space-x-2">
+              <Skeleton className="h-8 w-20 rounded-md inline-block" />
+              <Skeleton className="h-8 w-10 rounded-md inline-block" />
+              <Skeleton className="h-8 w-10 rounded-md inline-block" />
+              <Skeleton className="h-8 w-10 rounded-md inline-block" />
+              <Skeleton className="h-8 w-10 rounded-md inline-block" />
+              <Skeleton className="h-8 w-20 rounded-md inline-block" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -284,7 +321,6 @@ const DataTable = ({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Export button clicked via onClick'); // Debug log
                 exportToExcel();
               }}
             >

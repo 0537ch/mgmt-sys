@@ -5,7 +5,8 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel }) => {
   const [formData, setFormData] = React.useState({
     nama: editingMenuGroup?.nama || '',
     idSistem: editingMenuGroup?.idSistem || '',
-    status: editingMenuGroup?.status !== undefined ? editingMenuGroup.status : true
+    status: editingMenuGroup?.status !== undefined ? editingMenuGroup.status : true,
+    isAdministrator: editingMenuGroup?.isAdministrator || false
   });
 
   // Update form data when editingMenuGroup changes
@@ -13,7 +14,8 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel }) => {
     setFormData({
       nama: editingMenuGroup?.nama || '',
       idSistem: editingMenuGroup?.idSistem || '',
-      status: editingMenuGroup?.status !== undefined ? editingMenuGroup.status : true
+      status: editingMenuGroup?.status !== undefined ? editingMenuGroup.status : true,
+      isAdministrator: editingMenuGroup?.isAdministrator || false
     });
   }, [editingMenuGroup]);
 
@@ -41,7 +43,8 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel }) => {
       setFormData({
         nama: '',
         idSistem: '',
-        status: true
+        status: true,
+        isAdministrator: false
       });
     }
     onCancel();
@@ -100,6 +103,27 @@ const EditModal = ({ editingMenuGroup, onSave, onCancel }) => {
                 </button>
                 <span className="ml-3 text-sm font-medium text-foreground">
                   {formData.status ? 'Active' : 'Inactive'}
+                </span>
+              </label>
+            </div>
+
+            <div>
+              <label className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, isAdministrator: !prev.isAdministrator }))}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
+                    formData.isAdministrator ? 'bg-primary' : 'bg-muted'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-primary-foreground transition-transform ${
+                      formData.isAdministrator ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className="ml-3 text-sm font-medium text-foreground">
+                  Is Administrator
                 </span>
               </label>
             </div>

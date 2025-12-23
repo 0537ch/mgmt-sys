@@ -64,7 +64,10 @@ export function ComboBox({
   )
 
   const handleSelect = React.useCallback((selectedValue: string) => {
-    const option = options.find(opt => opt.value === selectedValue || opt.label === selectedValue)
+    const option = options.find(opt =>
+      String(opt.value) === selectedValue || opt.label === selectedValue
+    );
+
     if (option && onValueChange) {
       onValueChange(option.value)
     }

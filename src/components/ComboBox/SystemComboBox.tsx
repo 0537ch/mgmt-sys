@@ -33,7 +33,7 @@ export function SystemComboBox({
     return (
       <div className="w-full">
         <button
-          className="w-full p-2 border border-red-300 bg-red-50 text-red-700 rounded text-sm"
+          className="w-full p-2 border border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400 rounded text-sm"
           onClick={refetch}
           disabled={loading}
         >

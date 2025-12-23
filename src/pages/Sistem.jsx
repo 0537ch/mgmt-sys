@@ -23,21 +23,21 @@ function SystemManagement() {
   const { systems, loading, error, loadSystems } = useSystems()
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
-  const [editingUser, setEditingUser] = useState(null)
+  const [editingSystem, setEditingSystem] = useState(null)
   const [detailsUser, setDetailsUser] = useState(null)
 
-  const handleEditUser = (user) => {
-    setEditingUser(user)
+  const handleEditSystem = (system) => {
+    setEditingSystem(system)
     setShowEditModal(true)
   }
 
-  const handleShowDetails = (user) => {
-    setDetailsUser(user)
+  const handleShowDetails = (system) => {
+    setDetailsUser(system)
     setShowDetailsModal(true)
   }
 
   const handleCancelEdit = () => {
-    setEditingUser(null)
+    setEditingSystem(null)
     setShowEditModal(false)
   }
 
@@ -46,13 +46,13 @@ function SystemManagement() {
     setShowDetailsModal(false)
   }
 
-  const handleUpdateUser = async (systemData) => {
-    if (editingUser) {
+  const handleUpdateSystem = async (systemData) => {
+    if (editingSystem) {
       try {
         await saveSystemData(systemData);
         // Refresh the data to show updated changes
         loadSystems();
-        setEditingUser(null);
+        setEditingSystem(null);
         setShowEditModal(false);
       } catch (error) {
         console.error("Error saving system:", error);
@@ -102,7 +102,7 @@ function SystemManagement() {
       searchable: false,
       sortable: false,
       exportable: false,
-      render: (item) => <ActionsCell item={item} onEdit={handleEditUser} onShowDetails={handleShowDetails} />
+      render: (item) => <ActionsCell item={item} onEdit={handleEditSystem} onShowDetails={handleShowDetails} />
     }
   ];
 
@@ -125,15 +125,15 @@ function SystemManagement() {
               headers: '{"Accept":"application/json"}',
               token: null
           }
-          setEditingUser(newSystemConfig)
+          setEditingSystem(newSystemConfig)
           setShowEditModal(true)
         }}
         onExport={exportToExcel}
       />
-      
+
       <EditModal
-        editingUser={editingUser}
-        onSave={handleUpdateUser}
+        editingSystem={editingSystem}
+        onSave={handleUpdateSystem}
         onCancel={handleCancelEdit}
       />
       

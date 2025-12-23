@@ -3,12 +3,19 @@ import apiClient from './axiosConfig';
 const ENDPOINT_LIST = import.meta.env.VITE_API_ACC_GROUP_ENDPOINT;
 const ENDPOINT_SAVE = import.meta.env.VITE_API_ACC_GROUP_SAVE;
 
-interface AccGroupItem {
+export type AccGroupItem = {
   id?: number;
   namaGroup?: string;
-  codeGroup?: string; 
+  codeGroup?: string | { id?: number; nama?: string };
+  idSistem?: string | number;
+  isAdministrator?: boolean;
+  status?: boolean;
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
   [key: string]: any;
-}
+};
 
 interface ApiResponse<T> {
   data?: T;
@@ -22,7 +29,6 @@ export const fetchAccGroup = async (): Promise<AccGroupItem[]> => {
     const response = await apiClient.get(ENDPOINT_LIST);
     const apiResponse: ApiResponse<AccGroupItem[]> = response.data;
 
-    // Validasi: Pastikan data ada dan berupa array
     if (!apiResponse.data || !Array.isArray(apiResponse.data)) {
       return [];
     }
@@ -40,7 +46,6 @@ export const saveAccGroup = async (accGroupData: AccGroupItem): Promise<AccGroup
     const response = await apiClient.post(ENDPOINT_SAVE, accGroupData);
     const apiResponse: ApiResponse<AccGroupItem> = response.data;
 
-    // Validasi response
     if (!apiResponse.data) {
       throw new Error('Failed to save account group');
     }

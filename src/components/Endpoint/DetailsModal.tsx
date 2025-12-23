@@ -1,6 +1,13 @@
 import React from 'react';
+import type { MenuItem } from '@/api/menuApi';
 
-const DetailsModal = ({ showModal, item, setShowModal }) => {
+interface DetailsModalProps {
+  showModal: boolean;
+  item: MenuItem | null;
+  setShowModal: (show: boolean) => void;
+}
+
+const DetailsModal = ({ showModal, item, setShowModal }: DetailsModalProps) => {
   if (!showModal || !item) {
     return null;
   }
@@ -26,21 +33,19 @@ const DetailsModal = ({ showModal, item, setShowModal }) => {
           <div className="space-y-4">
             {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              
-              
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Endpoint Name</label>
-                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{item.nama}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Endpoint Name</label>
+                <p className="text-sm text-foreground bg-muted/50 p-2 rounded">{item.nama}</p>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Menu Number</label>
-                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{item.noMenu}</p>
+                <label className="block text-sm font-medium text-foreground mb-1">Menu Number</label>
+                <p className="text-sm text-foreground bg-muted/50 p-2 rounded">{item.noMenu}</p>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Show in Sidebar</label>
-                <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">
+                <label className="block text-sm font-medium text-foreground mb-1">Show in Sidebar</label>
+                <p className="text-sm text-foreground bg-muted/50 p-2 rounded">
                   {item.isSidebar ? 'Yes' : 'No'}
                 </p>
               </div>
@@ -63,10 +68,16 @@ const DetailsModal = ({ showModal, item, setShowModal }) => {
               <label className="block text-sm font-medium text-foreground mb-1">System Information</label>
               <div className="bg-muted/50 p-3 rounded">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {item.group_menu?.sistem && (
+                  {typeof item.group_menu === 'object' && item.group_menu?.sistem && (
                     <div>
                       <span className="text-xs text-muted-foreground">System Name:</span>
                       <p className="text-sm text-foreground">{item.group_menu.sistem.nama}</p>
+                    </div>
+                  )}
+                  {!item.group_menu && (
+                    <div>
+                      <span className="text-xs text-muted-foreground">System Name:</span>
+                      <p className="text-sm text-foreground">Not assigned</p>
                     </div>
                   )}
                 </div>
@@ -78,44 +89,53 @@ const DetailsModal = ({ showModal, item, setShowModal }) => {
               <label className="block text-sm font-medium text-foreground mb-1">Group Information</label>
               <div className="bg-muted/50 p-3 rounded">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Group ID:</span>
-                    <p className="text-sm text-foreground">{item.group_menu?.id || 'Not assigned'}</p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Group Name:</span>
-                    <p className="text-sm text-foreground">{item.group_menu?.nama || 'Not assigned'}</p>
-                  </div>
+                  {typeof item.group_menu === 'object' ? (
+                    <>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Group ID:</span>
+                        <p className="text-sm text-foreground">{item.group_menu.id || 'Not assigned'}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Group Name:</span>
+                        <p className="text-sm text-foreground">{item.group_menu.nama || 'Not assigned'}</p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="col-span-2">
+                      <span className="text-xs text-muted-foreground">Group ID:</span>
+                      <p className="text-sm text-foreground">{item.group_menu || 'Not assigned'}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Timestamps */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Timestamps</label>
-              <div className="bg-gray-50 p-3 rounded">
+              <label className="block text-sm font-medium text-foreground mb-1">Timestamps</label>
+              <div className="bg-muted/50 p-3 rounded">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <div>
-                    <span className="text-xs text-gray-500">Created At:</span>
-                    <p className="text-sm text-gray-900">
+                    <span className="text-xs text-muted-foreground">Created At:</span>
+                    <p className="text-sm text-foreground">
                       {item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Not available'}
                     </p>
                   </div>
                   <div>
-                    <span className="text-xs text-gray-500">Updated At:</span>
-                    <p className="text-sm text-gray-900">
+                    <span className="text-xs text-muted-foreground">Updated At:</span>
+                    <p className="text-sm text-foreground">
                       {item.updatedAt ? new Date(item.updatedAt).toLocaleString() : 'Not available'}
                     </p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                   <div>
-                    <span className="text-xs text-gray-500">Created By:</span>
-                    <p className="text-sm text-gray-900">{item.createdBy || 'Not available'}</p>
+                    <span className="text-xs text-muted-foreground">Created By:</span>
+                    <p className="text-sm text-foreground">{item.createdBy || 'Not available'}</p>
                   </div>
                   <div>
-                    <span className="text-xs text-gray-500">Updated By:</span>
-                    <p className="text-sm text-gray-900">{item.updatedBy || 'Not available'}</p>
+                    <span className="text-xs text-muted-foreground">Updated By:</span>
+                    <p className="text-sm text-foreground">{item.updatedBy || 'Not available'}</p>
                   </div>
                 </div>
               </div>

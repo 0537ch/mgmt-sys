@@ -35,7 +35,9 @@ const DetailsModal = ({ detailsMenuGroup, onClose }) => {
               <label className="block text-sm font-medium text-foreground">Status</label>
               <div className="mt-1 px-3 py-2 bg-muted/50 border border-border rounded-md text-foreground">
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                  detailsMenuGroup.status ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                  detailsMenuGroup.status
+                    ? 'bg-green-500/10 text-green-700 dark:text-green-400'
+                    : 'bg-red-500/10 text-red-700 dark:text-red-400'
                 }`}>
                   {detailsMenuGroup.status ? 'Active' : 'Inactive'}
                 </span>
@@ -45,7 +47,9 @@ const DetailsModal = ({ detailsMenuGroup, onClose }) => {
               <label className="block text-sm font-medium text-foreground">Is Administrator</label>
               <div className="mt-1 px-3 py-2 bg-muted/50 border border-border rounded-md text-foreground">
                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                  detailsMenuGroup.isAdministrator ? 'bg-violet-100 text-violet-800' : 'bg-slate-100 text-slate-800'
+                  detailsMenuGroup.isAdministrator
+                    ? 'bg-purple-500/10 text-purple-700 dark:text-purple-400'
+                    : 'bg-muted-foreground/20 text-muted-foreground'
                 }`}>
                   {detailsMenuGroup.isAdministrator ? 'Yes' : 'No'}
                 </span>

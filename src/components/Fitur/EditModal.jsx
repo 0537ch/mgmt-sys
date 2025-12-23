@@ -116,15 +116,15 @@ const EditModal = ({
             </div>
 
             {/* System ComboBox */}
-                        <div className="relative z-[10001]">
-                          <label className="block text-sm font-medium text-foreground mb-1">System</label>
-                          <SystemComboBox
-                            value={formData.idSistem}
-                            onValueChange={(value) => handleChange('idSistem', value)}
-                            placeholder="Select system..."
-                            className="w-full"
-                          />
-                        </div>
+            <div className="relative z-[10001]">
+              <label className="block text-sm font-medium text-foreground mb-1">System</label>
+                <SystemComboBox
+                  value={formData.idSistem}
+                  onValueChange={(value) => handleChange('idSistem', value)}
+                  placeholder="Select system..."
+                  className="w-full"
+                />
+            </div>
 
             {/* Input Show Feature */}
             <div>

@@ -31,7 +31,7 @@ const getUserData = () => {
   const username = localStorage.getItem('username') || 'User'
   const userDataString = localStorage.getItem('user')
   let userData = { name: username, email: '', avatar: '' }
-  
+
   if (userDataString) {
     try {
       const parsedUser = JSON.parse(userDataString)
@@ -44,7 +44,7 @@ const getUserData = () => {
       console.error("Failed to parse user data", error)
     }
   }
-  
+
   return userData
 }
 
@@ -55,7 +55,7 @@ const data = {
       title: "Dashboard",
       url:"/dashboard",
       icon:LayoutDashboard,
-      isActive:false,
+      isActive: false,
       items: [],
     },
     {
@@ -69,28 +69,28 @@ const data = {
       title: "Endpoint Group",
       url: "/menu",
       icon: Link,
-      isActive: true,
+      isActive: false,
       items: [],
     },
     {
       title: "Endpoint",
       url: "/menu-data",
       icon: Braces,
-      isActive: true,
+      isActive: false,
       items: []
     },
     {
       title: "Account Group",
       url: "/account-group",
       icon: Users,
-      isActive: true,
+      isActive: false,
       items: [],
     },
     {
       title: "Account",
       url: "/account",
       icon: User,
-      isActive: true,
+      isActive: false,
       items: []
     },
     {
@@ -101,8 +101,6 @@ const data = {
       items: [],
     },
   ],
-
-  
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
